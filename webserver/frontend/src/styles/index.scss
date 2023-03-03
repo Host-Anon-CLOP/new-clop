@@ -1,0 +1,12 @@
+$success: #28a745;
+$info: #285fa7;
+
+@import "~bootstrap/scss/bootstrap.scss";
+
+.dropdown:hover .dropdown-menu { // Display dropdown menu on hover
+  display: block;
+}
+
+.form-control::file-selector-button {
+  margin-right: 1rem; // Fix file input button
+}

@@ -1,0 +1,14 @@
+clop.localhost {
+    handle /static/* {
+        root * /fileserver
+        file_server
+    }
+    handle /media/* {
+        root * /fileserver
+        file_server
+    }
+    handle {
+        reverse_proxy web:8000
+    }
+    log
+}

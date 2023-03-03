@@ -1,0 +1,109 @@
+{% extends "central_card_layout.html" %}
+
+{% block title %}Profile - >CLOP{% endblock %}
+
+{% block card-header %}Profile{% endblock %}
+
+{% block card-body %}
+<form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate="">
+    {% csrf_token %}
+    <div class="mb-3">
+        <div class="mb-2">
+            <label for="username" class="text-muted">Username</label>
+        </div>
+        <input
+                type="text"
+                class="form-control bg-light mb-2"
+                id="username"
+                name="username"
+                value="{{ user.username }}"
+                readonly=""
+        >
+        <a class="link-primary" href="{% url 'change-password' %}">Change Password</a>
+
+    </div>
+    <div class="mb-3">
+        <div class="mb-2 w-100">
+            <label for="email" class="text-muted">Email</label>
+            <div class="text-muted fw-light" style="font-size: 0.8rem;">
+                <span class="text-nowrap">No confirmation;</span>
+                <span class="text-nowrap">used to restore password.</span>
+            </div>
+        </div>
+        <input
+                type="email"
+                class="form-control bg-light mb-2"
+                id="email"
+                name="email"
+                value="{{ user.email }}"
+                readonly=""
+        >
+        <a class="link-primary" href="{% url 'change-email' %}">Change Email</a>
+    </div>
+    <div class="mb-3">
+        <label for="bio" class="mb-2 text-muted">Bio</label>
+        <textarea
+                class="form-control {% if form.errors.bio %}is-invalid{% endif %}"
+                id="bio"
+                name="bio"
+                rows="3"
+        >{{ user.profile.bio }}</textarea>
+        <div class="invalid-feedback">{{ form.errors.bio }}</div>
+    </div>
+    <div class="mb-3">
+        <div class="mb-2 d-flex align-items-center">
+            <label for="flag" class="text-muted">Flag</label>
+            {% if user.profile.flag %}
+                <img src="{{ user.profile.flag.url }}" class="mx-2" alt="flag" height="22px" width="22px"/>
+            {% endif %}
+        </div>
+        <div class="input-group {% if form.errors.flag %}is-invalid{% endif %}">
+            <input
+                    type="file"
+                    class="form-control {% if form.errors.flag %}is-invalid{% endif %}"
+                    aria-label="upload flag"
+                    id="flag"
+                    name="flag"
+            >
+            <input type="checkbox" class="btn-check" style="border-left: none;"  id="flag-clear" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="flag-clear">Clear</label>
+        </div>
+        <div class="invalid-feedback">{{ form.errors.flag }}</div>
+    </div>
+    <div class="mb-3">
+        <label for="color_scheme" class="mb-2 text-muted">Color Scheme</label>
+        <select
+                class="form-select {% if form.errors.color_scheme %}is-invalid{% endif %}"
+                id="color_scheme"
+                name="color_scheme"
+        >
+        {% for value, label in form.fields.color_scheme.choices %}
+            <option value="{{ value }}" {% if user.profile.color_scheme == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+        </select>
+        <div class="invalid-feedback">{{ form.errors.color_scheme }}</div>
+    </div>
+    <div class="mb-3">
+        <label class="mb-2 text-muted">Preferences</label>
+        <div class="form-check">
+            <input
+                    class="form-check-input"
+                    type="checkbox"
+                    id="hide_banners"
+                    name="hide_banners"
+                    {% if user.profile.hide_banners %}checked{% endif %}
+            >
+            <label class="form-check-label" for="hide_banners">Hide banners</label>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary px-3">Update profile</button>
+    </div>
+</form>
+
+{% endblock %}
+
+{% block card-footer %}
+{#    <a class="text-dark text-nowrap" href="{% url 'change-password' %}">Change password</a>#}
+
+{% endblock %}

@@ -1,0 +1,95 @@
+secrets:
+  django_secret_key:
+    file: $SECRETS_DIR/django_secret_key
+  postgres_password:
+    file: $SECRETS_DIR/postgres_password
+
+
+volumes:
+  static:
+  media:
+  postgres:
+  caddy_data:
+  caddy_config:
+
+networks:
+  default:
+  internal:
+    internal: true
+
+services:
+  web:
+    build: webserver/.
+    container_name: clop-web
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+    expose:
+      - 8000
+    volumes:
+      - static:/home/app/web/staticfiles
+      - media:/home/app/web/media
+    depends_on:
+      - db
+      - frontend
+    secrets:
+      - django_secret_key
+      - postgres_password
+    environment:
+      DOMAIN_NAME: $DOMAIN_NAME
+      # Database
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: $POSTGRES_NAME
+      DB_USER: $POSTGRES_USER
+      DB_HOST: db
+      DB_PORT: 5432
+      # Secrets
+      DJANGO_SECRET_KEY_FILE: /run/secrets/django_secret_key
+      POSTGRES_PASS_FILE: /run/secrets/postgres_password
+
+  frontend:
+    build: webserver/frontend/.
+    container_name: clop-frontend
+    security_opt:
+      - no-new-privileges:true
+
+  db:
+    image: postgres:15-alpine
+    container_name: clop-db
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+    expose:
+      - 5432
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    secrets:
+      - postgres_password
+    environment:
+      POSTGRES_DB: $POSTGRES_NAME
+      POSTGRES_USER: $POSTGRES_USER
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+
+  caddy:
+    image: caddy:2.6-alpine
+    container_name: clop-caddy
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+      - default
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - static:/fileserver/static
+      - media:/fileserver/media

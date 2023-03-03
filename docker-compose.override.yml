@@ -1,0 +1,12 @@
+# Development overrides
+services:
+  web:
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/home/app/web  # for live refresh/debug
+    environment:
+      DJANGO_CONFIGURATION: Development
+  frontend:  # live refresh works like shit
+    command: npm run watch
+    volumes:
+      - ./webserver/frontend:/home/app/web  # for live refresh

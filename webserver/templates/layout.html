@@ -1,0 +1,85 @@
+{% load webpack_loader static %}
+
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}>CLOP{% endblock %}</title>
+    {% stylesheet_pack 'layout' %}
+</head>
+
+<body class="h-100">
+<nav class="navbar navbar-expand-md bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">>CLOP</a>
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">Login</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item dropdown">
+                        <a
+                                class="nav-link dropdown-toggle"
+                                href="" role="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                        >
+                            User
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">User Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</nav>
+
+{% if messages %}
+    <div aria-live="polite" aria-atomic="true" class="position-relative">
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            {% for message in messages %}
+                <div
+                        class="toast align-items-center border-0
+                        {% if message.level == 25 %}bg-success
+                        {% elif message.level == 20 %}bg-info
+                        {% endif %}"
+                        role="alert"
+                        aria-live="assertive"
+                        aria-atomic="true"
+                >
+                    <div class="d-flex">
+                        <div class="toast-body text-white">{{ message }}</div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                                aria-label="Close"></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}
+
+{% block content %}{% endblock %}
+
+{% javascript_pack 'layout' 'layout' attrs='charset="UTF-8"' %}
+
+</body>
+</html>

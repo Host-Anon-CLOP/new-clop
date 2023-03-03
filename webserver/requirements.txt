@@ -1,0 +1,10 @@
+Django==4.1.7
+psycopg2-binary==2.9.5
+Pillow==9.4.0
+
+django-extensions==3.2.1
+django-configurations==2.4
+django-environ==0.10.0
+django_debug_toolbar==3.8.1
+
+python-webpack-boilerplate==1.0.1

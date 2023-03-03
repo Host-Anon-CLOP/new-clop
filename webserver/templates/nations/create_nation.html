@@ -1,0 +1,30 @@
+{% extends "central_card_layout.html" %}
+
+{% block title %}Create Nation - >CLOP{% endblock %}
+
+{% block card-header %}Create nation{% endblock %}
+
+{% block card-body %}
+<form class="needs-validation" method="POST" novalidate="">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="username" class="mb-2 text-muted">Name</label>
+        <input
+                type="text"
+                class="form-control {% if form.errors.name %}is-invalid{% endif %}"
+                id="username"
+                name="username"
+                value=""
+                required=""
+                autofocus=""
+        >
+    </div>
+
+    <div class="d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary px-3">Create Nation</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block card-footer %}
+{% endblock %}
