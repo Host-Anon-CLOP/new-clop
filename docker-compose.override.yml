@@ -6,7 +6,36 @@ services:
       - .:/home/app/web  # for live refresh/debug
     environment:
       DJANGO_CONFIGURATION: Development
+
+  queue_worker:
+    volumes:
+      - .:/home/app/web  # for live refresh/debug
+    environment:
+        DJANGO_CONFIGURATION: Development
+
   frontend:  # live refresh works like shit
     command: npm run watch
     volumes:
       - ./webserver/frontend:/home/app/web  # for live refresh
+
+  db:
+    ports:
+      - "5432:5432"
+    networks:
+      - default
+      - internal
+
+#  pgadmin:
+#    image: dpage/pgadmin4
+#    container_name: clop-pgadmin
+#    restart: unless-stopped
+#    security_opt:
+#      - no-new-privileges:true
+#    networks:
+#      - internal
+#    ports:
+#      - "5050:80"
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#      PGADMIN_DEFAULT_PASSWORD: root
+#      PGADMIN_LISTEN_PORT: 80

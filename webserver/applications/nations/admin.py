@@ -1,13 +1,20 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import Nation
+from .models import Nation, NationItem
+
+
+class NationItemInline(admin.TabularInline):
+    model = NationItem
+    extra = 1
 
 
 @admin.register(Nation)
 class NationAdmin(admin.ModelAdmin):
+    inlines = (NationItemInline, )
+
     fieldsets = (
-        (None, {'fields': ('owner', 'name', 'description', 'region', 'subregion')}),
+        (None, {'fields': ('owner', 'name', 'description', 'flag', 'region', 'subregion')}),
         ('Dates', {'fields': ('age', )}),
         ('Numbers', {'fields': ('funds', 'gdp_last_turn', 'satisfaction', 'se_relation', 'nlr_relation',)})
     )

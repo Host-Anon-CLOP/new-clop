@@ -1,5 +1,6 @@
 import mimetypes
-from .common import Common, BASE_DIR
+
+from .common import BASE_DIR, Common
 
 
 class Development(Common):

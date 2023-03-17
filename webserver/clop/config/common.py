@@ -1,7 +1,6 @@
-import os
 import logging
+import os
 from pathlib import Path
-
 
 import environ
 from configurations import Configuration
@@ -35,15 +34,19 @@ class Common(Configuration):
         'django.contrib.sessions',
         'django.contrib.messages',
         'django.contrib.staticfiles',
+        'django.contrib.humanize',
         # 'django.contrib.sites',
 
         # External
         'webpack_boilerplate',
         'django_extensions',
+        'django_q',
 
         # Internal
-        'apps.users',
-        'apps.nations'
+        'applications.users',
+        'applications.nations',
+        'applications.items',
+        'applications.notifications',
     ]
 
     MIDDLEWARE = [
@@ -59,6 +62,7 @@ class Common(Configuration):
     DOMAIN_NAME = env('DOMAIN_NAME', default='clop.localhost')
     ALLOWED_HOSTS = [DOMAIN_NAME]
     CSRF_TRUSTED_ORIGINS = [f'https://*.{DOMAIN_NAME}']
+    SESSION_COOKIE_HTTPONLY = True
 
     ROOT_URLCONF = 'clop.urls'
     SECRET_KEY = get_secret_file("DJANGO_SECRET_KEY_FILE")
@@ -74,6 +78,7 @@ class Common(Configuration):
     USE_L10N = True
     USE_TZ = True
 
+    LOGIN_URL = '/auth/login/'
     LOGIN_REDIRECT_URL = '/'
     LOGOUT_REDIRECT_URL = '/'
 
@@ -85,10 +90,27 @@ class Common(Configuration):
             'ENGINE': env('DB_ENGINE', default='django.db.backends.postgresql'),
             'NAME': env('DB_NAME', default='store'),
             'USER': env('DB_USER', default='postgres'),
-            'PASSWORD': get_secret_file('POSTGRES_PASS_FILE'),
+            'PASSWORD': get_secret_file('POSTGRES_PASSWORD_FILE'),
             'HOST': env('DB_HOST', default='127.0.0.1'),
             'PORT': env('DB_PORT', default=5432, cast=int),
         }
+    }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': f'redis://:{get_secret_file("REDIS_PASSWORD_FILE")}@{env("REDIS_HOST", default="127.0.0.1")}:{env("REDIS_PORT", default=6379, cast=int)}',
+        }
+    }
+
+    Q_CLUSTER = {
+        'name': 'clop',
+        'label': 'Task Queue',
+        'workers': 8,
+        'timeout': 180,
+        'retry': 240,
+        'recycle': 100,
+        'orm': 'default',
     }
 
     # Static files (CSS, JavaScript, Images)
@@ -121,6 +143,7 @@ class Common(Configuration):
                     'django.template.context_processors.request',
                     'django.contrib.auth.context_processors.auth',
                     'django.contrib.messages.context_processors.messages',
+                    'applications.notifications.context_processors.reports',
                 ],
             },
         },
@@ -199,5 +222,16 @@ class Common(Configuration):
                 'level': 'INFO'
             },
         }
+    }
+
+    REPORTS_LIMIT = 50
+    REPORTS_DISPLAY_LIMIT = 5
+
+    GAME_CONSTANTS = {
+        'INFLATION_MIN': 500000,
+        'INFLATION_DIVIDER': 500,
+
+        'RESOURCE_LOSS_MIN': 50000,
+        'RESOURCE_LOSS_DIVIDER': 500,
     }
 

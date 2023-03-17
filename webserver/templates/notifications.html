@@ -1,0 +1,58 @@
+{% load humanize %}
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        {% for message in messages %}
+            <div
+                    class="toast align-items-center border-0
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}bg-success
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}bg-info
+                    {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-danger
+                    {% endif %}"
+                    style="--bs-toast-max-width: 450px;"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}data-bs-autohide="false"{% endif %}
+            >
+                <div class="d-flex">
+                    <div class="toast-body text-white">{{ message|linebreaksbr }}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 mt-2 mx-auto" data-bs-dismiss="toast"
+                            aria-label="Close"></button>
+                </div>
+            </div>
+        {% endfor %}
+        {% for report in reports %}
+            <div
+                    class="toast align-items-center border-0
+                        {% if report.report_type == REPORT_TYPES.RECIPE %}bg-success
+{#                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}bg-info#}
+{#                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-danger#}
+                        {% endif %}"
+                    style="--bs-toast-max-width: 450px;"
+                    role="alert"
+                    aria-live="assertive"
+                    aria-atomic="true"
+                    data-bs-autohide="false"
+            >
+                <div class="toast-header">
+                    <span class="me-auto">{% include 'misc/nation_flag_name.html' with nation=report.nation %}</span>
+                    <small class="text-muted">{{ report.created_at|naturaltime }}</small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="dismissNotification('{{ report.id }}')"></button>
+                </div>
+                <div class="toast-body text-white">{{ report.text|linebreaksbr }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    function dismissNotification(notification_id){
+        // make a post request in background with vanilla js
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/notifications/report/dismiss/${notification_id}/`, true);
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.send();
+        console.log('dismissed notification', notification_id);
+    }
+</script>

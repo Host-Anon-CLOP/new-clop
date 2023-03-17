@@ -16,23 +16,23 @@
                 name="old_password"
                 autocomplete="current-password"
                 required=""
+                autofocus=""
         >
         <div class="invalid-feedback">{{ form.errors.old_password }}</div>
     </div>
         <div class="mb-3">
-        <div class="mb-2 w-100">
+        <div class="mb-2">
             <label for="email" class="text-muted">Email</label>
             <div class="text-muted fw-light" style="font-size: 0.8rem;">
                 No confirmation
             </div>
         </div>
-
         <input
                 type="email"
                 class="form-control {% if form.errors.email %}is-invalid{% endif %}"
                 id="email"
                 name="email"
-                value="{{ user.email }}"
+                value="{{ form.email.value|default_if_none:"" }}"
         >
         <div class="invalid-feedback">{{ form.errors.email }}</div>
     </div>

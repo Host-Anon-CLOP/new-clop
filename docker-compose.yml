@@ -3,12 +3,14 @@ secrets:
     file: $SECRETS_DIR/django_secret_key
   postgres_password:
     file: $SECRETS_DIR/postgres_password
-
+  redis_password:
+    file: $SECRETS_DIR/redis_password
 
 volumes:
   static:
   media:
   postgres:
+  redis:
   caddy_data:
   caddy_config:
 
@@ -18,7 +20,7 @@ networks:
     internal: true
 
 services:
-  web:
+  web: &web
     build: webserver/.
     container_name: clop-web
     restart: unless-stopped
@@ -37,6 +39,7 @@ services:
     secrets:
       - django_secret_key
       - postgres_password
+      - redis_password
     environment:
       DOMAIN_NAME: $DOMAIN_NAME
       # Database
@@ -45,9 +48,18 @@ services:
       DB_USER: $POSTGRES_USER
       DB_HOST: db
       DB_PORT: 5432
+      # Cache
+      REDIS_HOST: cache
+      REDIS_PORT: 6379
       # Secrets
       DJANGO_SECRET_KEY_FILE: /run/secrets/django_secret_key
-      POSTGRES_PASS_FILE: /run/secrets/postgres_password
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+
+  queue_worker:
+    <<: *web
+    container_name: clop-queue-worker
+    entrypoint: python manage.py qcluster
 
   frontend:
     build: webserver/frontend/.
@@ -73,6 +85,31 @@ services:
       POSTGRES_DB: $POSTGRES_NAME
       POSTGRES_USER: $POSTGRES_USER
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+
+  cache:
+    image: redis:7
+    container_name: clop-cache
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - internal
+    expose:
+      - 6379
+    volumes:
+      - redis:/data
+    secrets:
+      - redis_password
+    environment:
+      REDIS_PASSWORD_FILE: /run/secrets/redis_password
+    command: [
+      "bash", "-c",
+      '
+      docker-entrypoint.sh
+      --requirepass "$$(cat $$REDIS_PASSWORD_FILE)"
+      '
+    ]
+
 
   caddy:
     image: caddy:2.6-alpine

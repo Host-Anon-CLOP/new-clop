@@ -20,7 +20,7 @@
                 class="form-control {% if form.errors.username %}is-invalid{% endif %}"
                 id="username"
                 name="username"
-                value=""
+                value="{{ form.username.value|default_if_none:"" }}"
                 required=""
                 autofocus=""
         >
@@ -41,6 +41,8 @@
                 class="form-control {% if form.errors.email %}is-invalid{% endif %}"
                 id="email"
                 name="email"
+                value="{{ form.email.value|default_if_none:"" }}"
+                required=""
         >
         <div class="invalid-feedback">{{ form.errors.email }}</div>
     </div>
@@ -51,6 +53,7 @@
                 class="form-control {% if form.errors.password1 %}is-invalid{% endif %}"
                 id="password1"
                 name="password1"
+                value="{{ form.password1.value|default_if_none:"" }}"
                 required=""
         >
         <div class="invalid-feedback">{{ form.errors.password1 }}</div>
@@ -62,6 +65,7 @@
                 class="form-control {% if form.errors.password2 %}is-invalid{% endif %}"
                 id="password2"
                 name="password2"
+                value="{{ form.password2.value|default_if_none:"" }}"
                 required=""
         >
         <div class="invalid-feedback">{{ form.errors.password2 }}</div>

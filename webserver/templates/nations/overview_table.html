@@ -1,0 +1,49 @@
+{% load numbers_display %}
+
+<table class="table">
+    <tbody>
+        <tr>
+            <td>Age</td>
+            <td>{{ nation.age }}</td>
+        </tr>
+        <tr>
+            <td>Government Type</td>
+            <td>Not implemented</td>
+        </tr>
+        <tr>
+            <td>Economic Type</td>
+            <td>Not implemented</td>
+        </tr>
+    </tbody>
+</table>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th class="text-end">Current</th>
+            <th class="text-end">Per tick</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Solar Empire relationship</td>
+            <td class="text-end">{{ nation.se_relation|absolute_number }}</td>
+            <td class="text-end">{{ nation.per_tick.se_relation|delta_number  }}</td>
+        </tr>
+        <tr>
+            <td>New Lunar Republic relationship</td>
+            <td class="text-end">{{ nation.nlr_relation|absolute_number }}</td>
+            <td class="text-end">{{ nation.per_tick.nlr_relation|delta_number  }}</td>
+        </tr>
+        <tr>
+            <td>Satisfaction</td>
+            <td class="text-end">{{ nation.satisfaction|absolute_number }}</td>
+            <td class="text-end">{{ nation.per_tick.satisfaction|delta_number }}</td>
+        </tr>
+        <tr>
+            <td>Funds</td>
+            <td class="text-end">{{ nation.funds|absolute_number }}</td>
+            <td class="text-end">{{ nation.per_tick.funds|delta_number }}</td>
+        </tr>
+    </tbody>
+</table>

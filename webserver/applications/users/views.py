@@ -1,15 +1,16 @@
 from django.contrib import messages
-from django.contrib.auth import views as auth_views, login
+from django.contrib.auth import login
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
-from .forms import LoginForm, RegisterForm, UserProfileForm, ChangeEmailForm
+from .forms import ChangeEmailForm, LoginForm, RegisterForm, UserProfileForm
 
 
 class LoginView(auth_views.LoginView):
@@ -32,7 +33,7 @@ class LogoutView(auth_views.LogoutView):
 
 class RegisterView(CreateView):
     template_name = 'users/register.html'
-    success_url = '/'  # TODO: Redirect to nation creation page
+    success_url = reverse_lazy('nations:create_nation')
     form_class = RegisterForm
 
     def form_valid(self, form):

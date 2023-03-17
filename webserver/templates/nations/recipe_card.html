@@ -1,0 +1,106 @@
+{% load numbers_display %}
+
+<div class="card h-100">
+    <div class="card-body p-2 d-flex flex-column justify-content-between">
+        <div class="p-2 pt-0">
+            {{ recipe.description }}
+            {% if recipe.building and recipe.building.softcap %}
+            <hr class="my-2"/>
+            <span class="text-muted">
+                Building more than <span class="font-monospace">{{ recipe.building.softcap }}</span> will decrease satisfaction geometrically due to ecological damages.
+            </span>
+            {% endif %}
+        </div>
+        {% if recipe.building %}
+        <table class="table table-sm my-0">
+            <thead>
+                <tr class="d-flex">
+                    <th class="text-center w-50">Consumes</th>
+                    <th class=""></th>
+                    <th class="text-center w-50">Produces</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="d-flex">
+                    <td class="d-flex justify-content-center flex-column w-50">
+                    {% for resource in recipe.building.consumes_total.values %}
+                        {% if resource.amount != 0%}
+                        <div class="p-1 text-nowrap">
+                            <span>{{ resource.amount|delta_number:True }} {{ resource.name }}
+                            {% if resource.icon %}<img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="p-1 text-nowrap text-center">
+                            <span>Nothing</span>
+                        </div>
+                    {% endfor %}
+                    </td>
+                    <td class="d-flex justify-content-center flex-column"><div>></div></td>
+                    <td class="d-flex justify-content-center flex-column w-50">
+                    {% for resource in recipe.building.produces_total.values %}
+                        {% if resource.amount != 0%}
+                        <div class="p-1 text-nowrap">
+                            <span>{{ resource.amount|delta_number }} {{ resource.name }}
+                            {% if resource.icon %}<img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% empty %}
+                        <div class="p-1 text-nowrap text-center">
+                            <span>Nothing</span>
+                        </div>
+                    {% endfor %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        {% endif %}
+        <table class="table table-sm my-0">
+            <thead>
+                <tr class="d-flex">
+                    <th class="text-center w-50">Cost</th>
+                    <th class=""></th>
+                    <th class="text-center w-50">Gain</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="d-flex">
+                    <td class="d-flex justify-content-center flex-column w-50">
+                    {% for resource in recipe.consumes_total.values %}
+                        {% if resource.amount != 0%}
+                        <div class="p-1 ">
+                            <span>{{ resource.amount|delta_number:True }} {{ resource.name }}
+                            {% if resource.icon %}<img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </td>
+                    <td class="d-flex justify-content-center flex-column"><div>></div></td>
+                    <td class="d-flex justify-content-center flex-column w-50">
+                    {% for resource in recipe.produces_total.values %}
+                        {% if resource.amount != 0%}
+                        <div class="p-1 ">
+                            <span>{{ resource.amount|delta_number }} {{ resource.name }}
+                            {% if resource.icon %}<img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                    </td>
+                </tr>
+        </table>
+    </div>
+    <div class="card-footer p-2">
+        <form method="POST" action="{% url 'recipe_buy' recipe_id=recipe.id %}">
+        {% csrf_token %}
+{#        <input type="hidden" name="recipe_id" value="{{ recipe.id }}" hidden/>#}
+        <div class="input-group row gap-1 ms-0">
+            <input type="number" class="col-3 form-control" style="flex-basis: 50px;" name="amount" min="1" value="1"/>
+            <button class="col-9 btn btn-outline-success" style="--bs-btn-bg: var(--bs-form-control-bg)">{{ recipe.name }}</button>
+        </div>
+        </form>
+    </div>
+</div>

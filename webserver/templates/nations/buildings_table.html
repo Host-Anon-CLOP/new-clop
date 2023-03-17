@@ -1,0 +1,151 @@
+{% load numbers_display %}
+
+<table class="table table-sm">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Building</th>
+        <th class="text-center">Quantity</th>
+        <th class="text-center">Consume</th>
+        <th></th>
+        <th class="text-center">Produce</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody class="align-middle">
+    {% for building in nation.buildings_dict.values %}
+        <tr>
+            <td>
+            {% if building.icon %}
+                <img src="{{ building.icon }}" alt="{{ building.name }}" height="20" style="vertical-align: sub">
+            {% endif %}
+            </td>
+            <td>{{ building.name }}</td>
+            <td class="text-center">
+                <span class="{% if building.total <= building.softcap %}text-success{% else %}text-warning{% endif %}">{{ building.total }}</span>
+                {% if building.disabled > 0 %}
+                    <br/>
+                    <span class="text-muted text-nowrap">(+{{ building.disabled }} disabled)</span>
+                {% endif %}
+            </td>
+            <td>
+                {% for resource in building.consumes_total.values %}
+                    {% if resource.amount != 0 or resource.amount|check_float %}
+                        <div class="p-1 text-nowrap">
+                    <span>{{ resource.amount|delta_number:True }} {{ resource.name }}
+                        {% if resource.icon %}
+                            <img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                    </span>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="p-1 text-nowrap text-center">
+                        <span>Nothing</span>
+                    </div>
+                {% endfor %}
+            </td>
+            <td>></td>
+            <td>
+                {% for resource in building.produces_total.values %}
+                    {% if resource.amount != 0 or resource.amount|check_float %}
+                        <div class="p-1 text-nowrap">
+                    <span>{{ resource.amount|delta_number }} {{ resource.name }}
+                        {% if resource.icon %}
+                            <img class="d-inline" src="{{ resource.icon }}" alt="{{ resource.name }}">{% endif %}
+                    </span>
+                        </div>
+                    {% endif %}
+                {% empty %}
+                    <div class="p-1 text-nowrap">
+                        <span>Nothing</span>
+                    </div>
+                {% endfor %}
+            </td>
+            <td>
+                <div class="d-flex flex-row mb-1">
+                    <input type="number" class="form-control" min="1" max="{{ building.amount }}" value="1"
+                           id="{{ building.item_id }}">
+                </div>
+                <div class="d-flex flex-row gap-1 btn-group">
+                    <button
+                            class="btn btn-sm btn-outline-danger"
+                            onclick="onBuildingButton('destroy', {{ building.item_id }}, '{{ building.name }}')"
+                    >
+                        Destroy
+                    </button>
+                    <button
+                            class="btn btn-sm btn-outline-warning"
+                            onclick="onBuildingButton('disable', {{ building.item_id }}, '{{ building.name }}')"
+                            {% if building.total == 0 %}disabled{% endif %}
+                    >
+                        Disable
+                    </button>
+                    <button
+                            class="btn btn-sm btn-outline-success"
+                            onclick="onBuildingButton('enable', {{ building.item_id }}, '{{ building.name }}')"
+                            {% if building.disabled == 0 %}disabled{% endif %}
+                    >
+                        Enable
+                    </button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{#Hidden form for button actions#}
+<div class="modal" tabindex="-1" id="destroy_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">Are you sure about that?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fuck no</button>
+                <button type="button" class="btn btn-danger" id="destroy_submit">Destroy</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form method="POST" action="{% url 'building_action' %}" id="building_action" hidden>
+    {% csrf_token %}
+    <input type="number" id="building_id" name="building_id">
+    <input type="number" id="amount" name="amount">
+    <input type="text" id="action" name="action">
+</form>
+
+<script>
+    function onBuildingButton(action, building_id, building_name) {
+        const amount = document.getElementById(building_id).value
+
+        if (action === 'destroy') {
+            const modalElement = document.getElementById('destroy_modal')
+            modalElement.querySelector('.modal-title').innerText = `Destroy ${amount} ${building_name}?`
+
+            const modalButton = document.getElementById('destroy_submit')
+            modalButton.onclick = () => submitRequest(action, building_id, amount)
+
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show()
+        } else if (action === 'disable') {
+            submitRequest(action, building_id, amount)
+        } else if (action === 'enable') {
+            submitRequest(action, building_id, amount)
+        }
+    }
+
+    function submitRequest(action, building, amount) {
+        const form = document.getElementById('building_action')
+        const building_id_input = document.getElementById('building_id')
+        const amount_input = document.getElementById('amount')
+        const action_input = document.getElementById('action')
+
+        building_id_input.value = building
+        amount_input.value = amount
+        action_input.value = action
+
+        form.submit()
+    }
+</script>

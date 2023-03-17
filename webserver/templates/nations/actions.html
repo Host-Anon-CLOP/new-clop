@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% load webpack_loader static numbers_display %}
+
+{% block title %}{{ nation.name }} - actions - >CLOP{% endblock %}
+
+
+{% block content %}
+    <section>
+        <div class="container my-5">
+{#            <div class="row masonry justify-content-center" data-masonry="{&quot;percentPosition&quot;: true }">#}
+{#                {% for recipe_group in nation.recipes_by_type %}#}
+{#                <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12 mb-4">#}
+{#                    <div class="card">#}
+{#                        <div class="card-header">#}
+{#                            <h1 class="mx-2 my-0 fs-4 card-title fw-bold text-center">{{ recipe_group.name }}</h1>#}
+{#                        </div>#}
+{#                        <div class="card-body p-2">#}
+{#                            {% for recipe in recipe_group.recipes %}#}
+{#                                {% include 'nations/recipe_card.html' with recipe=recipe %}#}
+{#                            {% endfor %}#}
+{#                        </div>#}
+{#                    </div>#}
+{#                </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+            {% for recipe_group in nation.recipes_by_type %}
+            <div class="card my-4">
+                <div class="card-header">
+                    <h1 class="mx-2 my-0 fs-4 card-title fw-bold text-center">{{ recipe_group.name }}</h1>
+                </div>
+                <div class="card-body p-3">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-3 g-4">
+                    {% for recipe in recipe_group.recipes %}
+                        <div class="col">
+                            {% include 'nations/recipe_card.html' with recipe=recipe %}
+                        </div>
+                    {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
+
+{#{% block extra_scripts %}#}
+{#    {% javascript_pack 'actions_masonry' 'actions_masonry' attrs='charset="UTF-8"' %}#}
+{#{% endblock %}#}

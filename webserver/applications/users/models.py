@@ -1,8 +1,8 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 
@@ -21,11 +21,11 @@ class User(AbstractUser):
     def get_short_name(self):
         return self.username
 
-    @property
+    @cached_property
     def has_nations(self):
-        return self.nations.exists()
+        return self.nations.exists() and self.profile.active_nation_id is not None
 
-    @property
+    @cached_property
     def has_multiple_nations(self):
         return self.nations.count() > 1
 
@@ -34,7 +34,6 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='profile')
 
     bio = models.TextField(max_length=1000, blank=True)
-    flag = models.ImageField(upload_to='flags', blank=True, null=True)
 
     class COLOR_SCHEMES(models.TextChoices):
         LIGHT = 'light', _('Light')
@@ -50,6 +49,8 @@ class UserProfile(models.Model):
 
     stasis = models.BooleanField(default=False)
     stasis_date = models.DateTimeField(blank=True, null=True)
+
+    active_nation = models.ForeignKey('nations.Nation', null=True, on_delete=models.SET_NULL)
 
 
 @receiver(post_save, sender=User)

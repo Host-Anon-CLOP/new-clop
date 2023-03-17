@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
+from applications.nations.models import Nation
+
 from .models import User, UserProfile
 
 
@@ -14,9 +16,15 @@ class UserProfileInline(admin.StackedInline):
     max_num = 1
 
 
+class NationInline(admin.TabularInline):
+    model = Nation
+    extra = 1
+    fields = ('name', 'region', 'subregion', 'funds', 'satisfaction', 'se_relation', 'nlr_relation', )
+
+
 @admin.register(User)
 class UserAdmin(UserAdmin):
-    inlines = (UserProfileInline, )
+    inlines = (UserProfileInline, NationInline)
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),

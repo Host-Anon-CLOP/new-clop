@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class NationsConfig(AppConfig):
+class UsersConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.nations'
+    name = 'applications.users'

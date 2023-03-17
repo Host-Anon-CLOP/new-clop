@@ -1,5 +1,6 @@
 $success: #28a745;
 $info: #285fa7;
+$warning: #d58408;
 
 @import "~bootstrap/scss/bootstrap.scss";
 
@@ -9,4 +10,8 @@ $info: #285fa7;
 
 .form-control::file-selector-button {
   margin-right: 1rem; // Fix file input button
+}
+
+.background-secondary {
+  background-color: var(--bs-secondary-bg) !important;
 }

@@ -1,12 +1,9 @@
 from django import forms
-
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 from .models import User, UserProfile
-from misc.validators import max_file_size
 
 
 class LoginForm(AuthenticationForm):
@@ -47,11 +44,10 @@ class ChangeEmailForm(forms.ModelForm):
 
 class UserProfileForm(forms.ModelForm):
     bio = forms.CharField(required=False)
-    flag = forms.ImageField(required=False, validators=[max_file_size(1)])
 
     color_scheme = forms.ChoiceField(choices=UserProfile.COLOR_SCHEMES.choices, required=False)
     hide_banners = forms.BooleanField(required=False)
 
     class Meta:
         model = UserProfile
-        fields = ('bio', 'flag', 'color_scheme', 'hide_banners')
+        fields = ('bio', 'color_scheme', 'hide_banners')

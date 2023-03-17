@@ -5,5 +5,4 @@ os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
 
 from configurations.asgi import get_asgi_application
 
-
 application = get_asgi_application()
