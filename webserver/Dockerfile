@@ -36,13 +36,15 @@ ENV PYTHONUNBUFFERED 1
 RUN addgroup --system app && adduser --system --group app
 
 # create the appropriate directories
-ENV APP_HOME=/home/app/webserver
-RUN mkdir $APP_HOME
-WORKDIR $APP_HOME
+ENV APP_HOME=/home/app
+ENV WEBSERVER=$APP_HOME/webserver
+
+RUN mkdir $WEBSERVER
+WORKDIR $WEBSERVER
 
 # make directories so they would have right permissions
-RUN mkdir /home/app/staticfiles
-RUN mkdir /home/app/media
+RUN mkdir $APP_HOME/staticfiles
+RUN mkdir $APP_HOME/media
 
 # install dependencies
 RUN apt-get update && \
@@ -54,15 +56,15 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 
 # copy project
-COPY . $APP_HOME
+COPY . $WEBSERVER
 
 # give permissions to user 'app'
 RUN chown -R app:app $APP_HOME
-RUN chmod +x $APP_HOME/entrypoint.sh
+RUN chmod +x $WEBSERVER/entrypoint.sh
 
 # run as user 'app'
 USER app
 
 # run entrypoint.sh (wait for db to start and run initial commands)
-WORKDIR $APP_HOME
+WORKDIR $WEBSERVER
 ENTRYPOINT ["/home/app/webserver/entrypoint.sh"]
