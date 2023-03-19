@@ -3,9 +3,9 @@
   "version": "1.0.1",
   "description": "Webpack boilerplate for Django & Flask",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --config webpack/webpack.config.prod.js",
-    "start": "webpack serve --config webpack/webpack.config.dev.js",
-    "watch": "webpack --watch --config webpack/webpack.config.watch.js"
+    "build": "cross-env NODE_ENV=production npx webpack --config webpack/webpack.config.prod.js",
+    "start": "npx webpack serve --config webpack/webpack.config.dev.js",
+    "watch": "npx webpack --watch --config webpack/webpack.config.watch.js"
   },
   "repository": {
     "type": "git",
