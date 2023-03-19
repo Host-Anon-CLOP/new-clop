@@ -41,8 +41,8 @@ RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
 # make directories so they would have right permissions
-RUN mkdir $APP_HOME/staticfiles
-RUN mkdir $APP_HOME/media
+RUN mkdir /home/app/staticfiles
+RUN mkdir /home/app/media
 
 # install dependencies
 RUN apt-get update && \
