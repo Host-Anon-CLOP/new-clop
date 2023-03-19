@@ -118,7 +118,7 @@ class Common(Configuration):
     STATIC_ROOT = BASE_DIR.parent.parent / 'staticfiles'
     STATICFILES_DIRS = (
         BASE_DIR.parent / 'static',
-        BASE_DIR.parent / 'frontend/build',
+        BASE_DIR.parent / 'frontend',
     )
 
     MEDIA_URL = '/media/'
@@ -129,7 +129,7 @@ class Common(Configuration):
     ]
 
     WEBPACK_LOADER = {
-        'MANIFEST_FILE': BASE_DIR.parent / "frontend/build/manifest.json",
+        'MANIFEST_FILE': BASE_DIR.parent / "frontend/manifest.json",
     }
 
     TEMPLATES = [

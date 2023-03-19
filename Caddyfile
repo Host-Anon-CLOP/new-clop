@@ -1,4 +1,4 @@
-clop.localhost {
+{$DOMAIN_NAME} {
     handle /static/* {
         root * /fileserver
         file_server

@@ -36,7 +36,7 @@ ENV PYTHONUNBUFFERED 1
 RUN addgroup --system app && adduser --system --group app
 
 # create the appropriate directories
-ENV APP_HOME=/home/app/web
+ENV APP_HOME=/home/app/webserver
 RUN mkdir $APP_HOME
 WORKDIR $APP_HOME
 
@@ -64,5 +64,5 @@ RUN chmod +x $APP_HOME/entrypoint.sh
 USER app
 
 # run entrypoint.sh (wait for db to start and run initial commands)
-WORKDIR $APP_HOME/webserver
-ENTRYPOINT ["/home/app/web/webserver/entrypoint.sh"]
+WORKDIR $APP_HOME
+ENTRYPOINT ["/home/app/webserver/entrypoint.sh"]

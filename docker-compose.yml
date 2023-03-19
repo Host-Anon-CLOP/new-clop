@@ -9,6 +9,7 @@ secrets:
 volumes:
   static:
   media:
+  frontend:
   postgres:
   redis:
   caddy_data:
@@ -31,8 +32,9 @@ services:
     expose:
       - 8000
     volumes:
-      - static:/home/app/web/staticfiles
-      - media:/home/app/web/media
+      - static:/home/app/staticfiles
+      - media:/home/app/media
+      - frontend:/home/app/webserver/frontend
     depends_on:
       - db
       - frontend
@@ -62,10 +64,12 @@ services:
     entrypoint: python manage.py qcluster
 
   frontend:
-    build: webserver/frontend/.
+    build: frontend/.
     container_name: clop-frontend
     security_opt:
       - no-new-privileges:true
+    volumes:
+      - frontend:/home/app/web/build
 
   db:
     image: postgres:15-alpine
@@ -110,7 +114,6 @@ services:
       '
     ]
 
-
   caddy:
     image: caddy:2.6-alpine
     container_name: clop-caddy
@@ -130,3 +133,5 @@ services:
       - caddy_config:/config
       - static:/fileserver/static
       - media:/fileserver/media
+    environment:
+      DOMAIN_NAME: $DOMAIN_NAME
