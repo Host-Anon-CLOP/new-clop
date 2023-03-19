@@ -1,5 +1,6 @@
 # pull the official docker image
 FROM node:19-alpine
+ENV NODE_ENV="development"
 
 # create the appropriate directories
 ENV APP_HOME=/home/app/web
