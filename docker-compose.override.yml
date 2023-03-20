@@ -17,6 +17,7 @@ services:
     command: npm run watch
     volumes:
       - ./frontend:/home/app/web  # for live refresh
+      - /home/app/web/node_modules  # to persevere node_modules
 
   db:
     ports:
