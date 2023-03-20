@@ -33,7 +33,7 @@ class LogoutView(auth_views.LogoutView):
 
 class RegisterView(CreateView):
     template_name = 'users/register.html'
-    success_url = reverse_lazy('nations:create_nation')
+    success_url = reverse_lazy('create_nation')
     form_class = RegisterForm
 
     def form_valid(self, form):
