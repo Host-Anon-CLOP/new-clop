@@ -1,9 +1,8 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.views.generic import View
-from django.core.exceptions import PermissionDenied
-
 
 from .models import NationReport
 

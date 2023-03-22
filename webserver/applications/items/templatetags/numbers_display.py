@@ -32,6 +32,11 @@ def delta_number(value, invert: bool = False):
     return format_number(value, show_sign=True, invert=invert)
 
 
+@register.filter()
+def number(value: int):
+    return mark_safe(f'<span class="font-monospace fw-bold">{intcomma(value)}</span>')
+
+
 @register.filter
 def multiply(value, arg):
     return value * arg

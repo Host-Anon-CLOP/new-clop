@@ -1,11 +1,11 @@
+from pathlib import Path
+
+from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.core.management.color import no_style
 from django.db import connection
-from django.core.files import File
 from django.utils import timezone
 from django_q.models import Schedule
-
-from pathlib import Path
 
 from applications.enums import RECIPE_TYPES, REGIONS_ANY, SUBREGIONS_ANY
 from applications.items.models import (
@@ -15,8 +15,8 @@ from applications.items.models import (
     Item,
     Recipe,
     Resource,
-
 )
+
 # Definition utilities
 
 
@@ -412,6 +412,20 @@ class Command(BaseCommand):
 
         Schedule.objects.update_or_create(
             name=update_items_name,
-            defaults=update_items_defaults
+            defaults=update_items_defaults,
+        )
+
+        tick_nations_name = 'Tick nations'
+        tick_nations_defaults = dict(
+            func='applications.nations.tasks.tick_nations',
+            schedule_type=Schedule.CRON,
+            # At the start of every second hour
+            # cron='0 */2 * * *',
+            cron='*/1 * * * *',
+            repeats=-1,
+        )
+        Schedule.objects.update_or_create(
+            name=tick_nations_name,
+            defaults=tick_nations_defaults,
         )
 

@@ -1,8 +1,13 @@
 from django.core.cache import cache
 
-from .models import Resource, Building, Recipe
+from misc.cached import (
+    get_all_buildings,
+    get_all_items,
+    get_all_recipes,
+    get_all_resources,
+)
 
-from misc.cached import get_all_items, get_all_recipes, get_all_buildings, get_all_resources
+from .models import Building, Recipe, Resource
 
 
 def update_cache():

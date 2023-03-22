@@ -1,7 +1,7 @@
+from django.conf import settings
 from django.contrib import messages
 from django.db import models, transaction
 from django.db.models import Q
-from django.conf import settings
 
 
 class REPORT_TYPES(models.IntegerChoices):

@@ -1,6 +1,12 @@
 from django.urls import path
 
-from .views import CreateNationView, NationOverview, BuildingActionView, NationActionsView, RecipeBuyView
+from .views import (
+    BuildingActionView,
+    CreateNationView,
+    NationActionsView,
+    NationOverview,
+    RecipeBuyView,
+)
 
 urlpatterns = [
     path('', NationOverview.as_view(), name='nation_overview'),

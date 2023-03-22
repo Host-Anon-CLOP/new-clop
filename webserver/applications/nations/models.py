@@ -1,34 +1,38 @@
-import uuid
 import math
+import uuid
 from collections import defaultdict
 
+from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db import models, transaction
 from django.db.models import Q
 from django.utils.functional import cached_property
-from django.conf import settings
-from django.contrib.humanize.templatetags.humanize import intcomma
 
 from applications.enums import REGIONS, SUBREGIONS
 from applications.items.models import (
-    Resource,
-    Item,
+    RECIPE_TYPES,
+    SPECIAL_STATS,
     Building,
     Bundle,
     BundleItem,
-    Recipe,
+    Item,
     NationRecipe,
-    SPECIAL_STATS,
-    RECIPE_TYPES,
+    Recipe,
+    Resource,
 )
-from misc.cached import get_all_items, get_all_recipes, get_all_buildings, get_all_resources
+from applications.notifications.models import REPORT_TYPES, NationReport
+from applications.items.templatetags.numbers_display import absolute_number, delta_number, number
+from misc.cached import (
+    get_all_buildings,
+    get_all_items,
+    get_all_recipes,
+    get_all_resources,
+)
 from misc.errors import InvalidInput
 
-from .managers import NationResourceManager, NationBuildingManager
-
-from applications.notifications.models import NationReport, REPORT_TYPES
+from .managers import NationBuildingManager, NationResourceManager
 
 CONSTANTS = settings.GAME_CONSTANTS
 
@@ -130,7 +134,7 @@ class Nation(models.Model):
 
     @cached_property
     def resources_dict(self):
-        # Same deal as buildings_dict but mor
+        # Same deal as buildings_dict
         resource_type = ContentType.objects.get_for_model(Resource)
 
         resources = dict()
@@ -204,18 +208,6 @@ class Nation(models.Model):
         recipes_list.sort(key=lambda x: x['type'])
         return recipes_list
 
-    # def can_afford(self, consumes: dict):
-    #     if consumes['funds'] > self.funds:
-    #         return False
-    #
-    #     for resource_id, resource_dict in consumes.items():
-    #         if resource_id in SPECIAL_STATS:
-    #             continue
-    #         item = self.items.filter(item_id=resource_id[0], item_type_id=resource_id[1])
-    #         if item.amount < resource_dict['amount']:
-    #             return False
-    #     return True
-
     def buy_recipe(self, nation_recipe: NationRecipe):
         nation_items = self.items.all()
         items_dict = {(item.item_id, item.item_type_id): item for item in nation_items}
@@ -231,30 +223,30 @@ class Nation(models.Model):
             if amount > 0:
                 verb = 'gained'
             else:
-                verb = 'spent' if name == SPECIAL_STATS['funds']['name'] else 'lost'
+                verb = 'spent' if name != SPECIAL_STATS['satisfaction']['name'] else 'lost'
 
             success_messages.append(
-                f'{verb.title()} {intcomma(abs(amount))} {name}.'
+                f'{verb.title()} {number(abs(amount))} {name}.'
             )
 
         if consumes := nation_recipe.consumes_total:
-            if consumes['funds']['amount'] > self.funds:
-                error_messages.append(
-                    f'Not enough bits. '
-                    f'You have {intcomma(self.funds)} out of {intcomma(consumes["funds"]["amount"])}.'
-                )
-            for stat in SPECIAL_STATS.keys():
-                setattr(self, stat, getattr(self, stat) - consumes[stat]['amount'])
-                add_success_message(consumes[stat]['name'], -consumes[stat]['amount'])
-
             for resource_id, resource_dict in consumes.items():
                 if resource_id in SPECIAL_STATS:
+                    if resource_id == 'funds' and resource_dict['amount'] > self.funds:
+                        error_messages.append(
+                            f'Not enough bits. '
+                            f'You have {number(self.funds)} out of {number(consumes["funds"]["amount"])}.'
+                        )
+
+                    setattr(self, resource_id, getattr(self, resource_id) - resource_dict['amount'])
+                    add_success_message(resource_dict['name'], -resource_dict['amount'])
                     continue
+
                 current_amount = items_dict[resource_id].amount if resource_id in items_dict else 0
                 if current_amount < resource_dict['amount']:
                     error_messages.append(
                         f'Not enough {resource_dict["name"]}. '
-                        f'You have {intcomma(current_amount)} out of {intcomma(resource_dict["amount"])}.'
+                        f'You have {number(current_amount)} out of {number(resource_dict["amount"])}.'
                     )
                 else:
                     items_dict[resource_id].amount = current_amount - resource_dict['amount']
@@ -266,13 +258,12 @@ class Nation(models.Model):
             raise InvalidInput('\n'.join(error_messages))
 
         if produces := nation_recipe.produces_total:
-            for stat in SPECIAL_STATS.keys():
-                setattr(self, stat, getattr(self, stat) + produces[stat]['amount'])
-                add_success_message(produces[stat]['name'], produces[stat]['amount'])
-
             for resource_id, resource_dict in produces.items():
                 if resource_id in SPECIAL_STATS:
+                    setattr(self, resource_id, getattr(self, resource_id) + resource_dict['amount'])
+                    add_success_message(resource_dict['name'], resource_dict['amount'])
                     continue
+
                 if resource_id in items_dict:
                     current_amount = items_dict[resource_id].amount
                     items_dict[resource_id].amount = current_amount + resource_dict['amount']
@@ -288,7 +279,7 @@ class Nation(models.Model):
 
         report = NationReport(
             nation=self,
-            text=f'Successfully executed action {nation_recipe.name} x{nation_recipe.amount}.',
+            text=f'Successfully executed action {nation_recipe.name} x{number(nation_recipe.amount)}.',
             details='\n'.join(success_messages),
             report_type=REPORT_TYPES.RECIPE,
         )
@@ -297,10 +288,255 @@ class Nation(models.Model):
             report.save()
             self.save()
             for item in changed_items_dict.values():
-                if item.amount == 0:
-                    item.delete()
+                item.save()
+
+    def tick(self):
+        report_messages = []
+
+        inflation = self.inflation
+        if inflation:
+            self.funds -= inflation
+            report_messages.append(f'Inflation has taken away {number(inflation)} bits.')
+
+        # todo government type effects
+
+        satisfaction_multiplier = 1
+
+        # Over-satisfaction loss
+        oversatisfaction_loss = 0
+        oversatisfaction_description = None
+
+        satisfaction_thresholds = {
+            250: 'A satisfied population',
+            500: 'A very satisfied population',
+            750: 'A loving population',
+        }
+
+        for threshold, description in satisfaction_thresholds.items():
+            if self.satisfaction > threshold * satisfaction_multiplier:
+                loss = (self.satisfaction - threshold * satisfaction_multiplier) / (50 * satisfaction_multiplier)
+                oversatisfaction_loss += math.floor(loss)
+                oversatisfaction_description = description
+            else:
+                break
+
+        if oversatisfaction_loss:
+            self.satisfaction -= oversatisfaction_loss
+            report_messages.append(
+                f'{oversatisfaction_description} is hard to keep; you lose {number(oversatisfaction_loss)} satisfaction.'
+            )
+
+        # Loss of satisfaction for having an empire of more than 1 nation
+        empire_nations_count = self.owner.nations.count()
+        if empire_nations_count > 1:
+            empire_satisfaction_loss = math.pow(empire_nations_count - 1, 2) * 20
+            # if self.government in ('Oppression', 'Alicorn Elite', 'Transponyism'): # todo government type effects
+            #     empire_satisfaction_loss = empire_satisfaction_loss / 3
+
+            empire_satisfaction_loss = math.ceil(empire_satisfaction_loss)
+            self.satisfaction -= empire_satisfaction_loss
+            report_messages.append(
+                f'You lose {number(empire_satisfaction_loss)} satisfaction for having an empire of {number(empire_nations_count)} nations.'
+            )
+
+        def get_relationship_delta(value, thresholds):
+            delta = 0
+            loss_description = None
+            for threshold, description in thresholds.items():
+                if value > threshold:
+                    delta += (value - threshold) / 50
+                    loss_description = description
                 else:
-                    item.save()
+                    break
+            return math.floor(delta), loss_description
+
+        # Loss of relationship with the superpowers when relations are too high
+
+        friendship_thresholds = {
+            250: 'A good friend',
+            400: 'A very good friend',
+            800: 'An extremely good friend',
+        }
+
+        se_friendship_loss, se_friendship_description = get_relationship_delta(self.se_relation, friendship_thresholds)
+        if se_friendship_loss:
+            self.se_relation -= se_friendship_loss
+            report_messages.append(
+                f'{se_friendship_description} is hard to keep; you lose {number(se_friendship_loss)} relationship with the Solar Empire.'
+            )
+
+        nlr_friendship_loss, nlr_friendship_description = get_relationship_delta(self.nlr_relation, friendship_thresholds)
+        if nlr_friendship_loss:
+            self.nlr_relation -= nlr_friendship_loss
+            report_messages.append(
+                f'{nlr_friendship_description} is hard to keep; you lose {number(nlr_friendship_loss)} relationship with the New Lunar Republic.'
+            )
+
+        # Gain of relationship with the superpowers when relations are too low
+
+        enmity_thresholds = {
+            450: 'A bad enemy',
+            700: 'A very bad enemy',
+            900: 'An extremely bad enemy',
+        }
+
+        # todo check if the player is Ascending
+        se_enmity_loss, se_enmity_description = get_relationship_delta(-self.se_relation, enmity_thresholds)
+        if se_enmity_loss:
+            self.se_relation += se_enmity_loss
+            report_messages.append(
+                f'{se_enmity_description} forgets eventually; you gain {number(se_enmity_loss)} relationship with the Solar Empire.'
+            )
+
+        nlr_enmity_loss, nlr_enmity_description = get_relationship_delta(-self.nlr_relation, enmity_thresholds)
+        if nlr_enmity_loss:
+            self.nlr_relation += nlr_enmity_loss
+            report_messages.append(
+                f'{nlr_enmity_description} forgets eventually; you gain {number(nlr_enmity_loss)} relationship with the New Lunar Republic.'
+            )
+
+        # Loss of relationship with the superpowers due to jealousy
+
+        JEALOUSY_DIVIDOR = 50
+        if self.nlr_relation > 0:
+            se_jealousy = math.floor(self.nlr_relation / JEALOUSY_DIVIDOR)
+            if se_jealousy:
+                self.se_relation -= se_jealousy
+                report_messages.append(
+                    f'The Solar Empire does not like your good relations with the New Lunar Republic. You lose {number(se_jealousy)} relationship.'
+                )
+
+        if self.se_relation > 0:
+            nlr_jealousy = math.floor(self.se_relation / JEALOUSY_DIVIDOR)
+            if nlr_jealousy:
+                self.nlr_relation -= nlr_jealousy
+                report_messages.append(
+                    f'The New Lunar Republic does not like your good relations with the Solar Empire. You lose {number(nlr_jealousy)} relationship.'
+                )
+
+        # Buildings and resources calculations
+        resources = dict()
+        for resource in self.resources:
+            resource.update_from_cache()
+            resources[resource.item_id] = resource
+
+        buildings = dict()
+        for building in self.buildings:
+            building.update_from_cache(include_satisfaction_loss=False)
+            buildings[building.item_id] = building
+
+        def add_success_message(building_name, building_amount, resource_name, amount):
+            if amount == 0:
+                return
+
+            if amount > 0:
+                verb = 'produced'
+            else:
+                verb = 'consumed' if resource_name != SPECIAL_STATS['satisfaction']['name'] else 'lost'
+
+            report_messages.append(
+                f'{number(building_amount)} of {building_name} {verb} {number(abs(amount))} {resource_name}.'
+            )
+
+        for building_id, building in buildings.items():
+            if building.disabled:
+                disabled_loss = building.disabled
+                self.satisfaction -= disabled_loss
+                report_messages.append(
+                    f'You lose {number(disabled_loss)} satisfaction for having {number(building.disabled)} of {building.name} disabled.'
+                )
+
+            if consumes := building.consumes_total:
+                can_afford = True
+
+                for resource_id, resource_dict in consumes.items():
+                    if resource_id in SPECIAL_STATS:
+                        if resource_id == 'funds' and resource_dict['amount'] > self.funds:
+                            can_afford = False
+                            report_messages.append(
+                                f'Not enough bits to run {building.name}.'
+                                f'You have {number(self.funds)} out of {number(consumes["funds"]["amount"])}.'
+                            )
+                    else:
+                        resource = resources[resource_id]
+                        if resource.amount < resource_dict['amount']:
+                            can_afford = False
+                            report_messages.append(
+                                f'Not enough {resource.name} to run {building.name}.'
+                                f'You have {number(resource.amount)} out of {number(resource_dict["amount"])}.'
+                            )
+
+                if can_afford:
+                    for resource_id, resource_dict in consumes.items():
+                        add_success_message(building.name, building.total, resource_dict['name'], -resource_dict['amount'])
+                        if resource_id in SPECIAL_STATS:
+                            setattr(self, resource_id, getattr(self, resource_id) - resource_dict['amount'])
+                        else:
+                            resources[resource_id].amount -= resource_dict['amount']
+                else:
+                    # buildings.pop(building_id)
+                    shutdown_loss = building.total
+                    self.satisfaction -= shutdown_loss
+                    report_messages.append(
+                        f'All {building.total} of {building.name} are shut down; you lose {number(shutdown_loss)} satisfaction.'
+                    )
+
+            if produces := building.produces_total:
+                for resource_id, resource_dict in produces.items():
+                    add_success_message(building.name, building.total, resource_dict['name'], resource_dict['amount'])
+                    if resource_id in SPECIAL_STATS:
+                        setattr(self, resource_id, getattr(self, resource_id) + resource_dict['amount'])
+                    else:
+                        resources[resource_id].amount += resource_dict['amount']
+
+        for resource in resources.values():
+            loss = resource.loss
+            if loss:
+                resource.amount -= loss
+                report_messages.append(
+                    f'As you have more than {number(CONSTANTS["RESOURCE_LOSS_MIN"])} {resource.name}, {number(loss)} was siphoned off.'
+                )
+
+        # Relationship caps
+        RELATIONSHIP_CAP_MAX = 1000
+        RELATIONSHIP_CAP_MIN = -1000
+
+        if self.se_relation > RELATIONSHIP_CAP_MAX:
+            self.se_relation = RELATIONSHIP_CAP_MAX
+            report_messages.append(
+                f'The Solar Empire is not interested in your friendship anymore. Relationship capped at {number(RELATIONSHIP_CAP_MAX)}.'
+            )
+
+        if self.nlr_relation > RELATIONSHIP_CAP_MAX:
+            self.nlr_relation = RELATIONSHIP_CAP_MAX
+            report_messages.append(
+                f'The New Lunar Republic is not interested in your friendship anymore. Relationship capped at {number(RELATIONSHIP_CAP_MAX)}.'
+            )
+
+        if self.se_relation < RELATIONSHIP_CAP_MIN:
+            self.se_relation = RELATIONSHIP_CAP_MIN
+            report_messages.append(
+                f'Even for the Solar Empire, there are limits to hate. Relationship capped at {number(RELATIONSHIP_CAP_MIN)}.'
+            )
+
+        if self.nlr_relation < RELATIONSHIP_CAP_MIN:
+            self.nlr_relation = RELATIONSHIP_CAP_MIN
+            report_messages.append(
+                f'Even for the New Lunar Republic, there are limits to hate. Relationship capped at {number(RELATIONSHIP_CAP_MIN)}.'
+            )
+
+        report = NationReport(
+            nation=self,
+            text='tick',
+            details='\n'.join(report_messages),
+            report_type=REPORT_TYPES.TICK,
+        )
+
+        with transaction.atomic():
+            report.save()
+            for resource in resources.values():
+                resource.save()
+            self.save()
 
 
 class NationItem(models.Model):
@@ -328,6 +564,14 @@ class NationItem(models.Model):
 
     def __str__(self):
         return f'{intcomma(self.amount)} {self.name}'
+
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        if self.amount == 0:
+            self.delete()
+        else:
+            super().save(force_insert, force_update, using, update_fields)
 
     @classmethod
     def from_cache(cls, nation, item_id, item_type, amount: int = 0):
@@ -399,7 +643,9 @@ class NationBuilding(NationItem):
     consumes_total = None
     produces_total = None
 
-    def update_from_cache(self):
+    # is_active = True
+
+    def update_from_cache(self, include_satisfaction_loss: bool = False):
         super().update_from_cache()
 
         # I use total = float(0) when I need to indicate that this building
@@ -434,10 +680,11 @@ class NationBuilding(NationItem):
                 resource['amount'] = amount * total if amount else 0
                 self.produces_total[resource_id] = resource
 
-            # Softcap penalty
-            self.produces_total['satisfaction']['amount'] -= self.softcap_penalty
-            # Disabled penalty
-            self.produces_total['satisfaction']['amount'] -= self.disabled
+            if include_satisfaction_loss:
+                # Softcap penalty
+                self.produces_total['satisfaction']['amount'] -= self.softcap_penalty
+                # Disabled penalty
+                self.produces_total['satisfaction']['amount'] -= self.disabled
 
             # Round satisfaction to int
             # if self.produces_total['satisfaction']['amount'] != 0:
@@ -510,9 +757,6 @@ class NationBuilding(NationItem):
         if save:
             with transaction.atomic():
                 self.nation.save()
-                if self.amount == 0:
-                    self.delete()
-                else:
-                    self.save()
+                self.save()
 
         return satisfaction

@@ -1,6 +1,6 @@
 from django.conf import settings
 
-from .models import NationReport, REPORT_TYPES
+from .models import REPORT_TYPES, NationReport
 
 
 def reports(request):

@@ -2,11 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, TemplateView, View, UpdateView
+from django.views.generic import CreateView, TemplateView, UpdateView, View
 
-from misc.views import HasNationMixin
 from misc.cached import get_all_recipes
 from misc.errors import exception_to_message
+from misc.views import HasNationMixin
 
 from .forms import CreateNationForm, EditNationForm
 from .models import NationRecipe
@@ -36,7 +36,6 @@ class NationOverview(HasNationMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # context['nation'] = self.request.user.profile.active_nation
         context['nation'] = context['form'].instance
 
         return context

@@ -3,7 +3,12 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.db import models
 
-from misc.cached import get_all_items, get_all_buildings, get_all_resources, get_all_recipes
+from misc.cached import (
+    get_all_buildings,
+    get_all_items,
+    get_all_recipes,
+    get_all_resources,
+)
 
 from ..enums import RECIPE_TYPES, REGIONS_ANY, SUBREGIONS_ANY
 from .managers import BuildingManager, BundleItemManager, BundleManager, RecipeManager

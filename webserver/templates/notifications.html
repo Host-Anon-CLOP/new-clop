@@ -16,7 +16,7 @@
                     {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}data-bs-autohide="false"{% endif %}
             >
                 <div class="d-flex">
-                    <div class="toast-body text-white">{{ message|linebreaksbr }}</div>
+                    <div class="toast-body text-white">{{ message|safe|linebreaksbr }}</div>
                     <button type="button" class="btn-close btn-close-white me-2 mt-2 mx-auto" data-bs-dismiss="toast"
                             aria-label="Close"></button>
                 </div>
@@ -40,7 +40,17 @@
                     <small class="text-muted">{{ report.created_at|naturaltime }}</small>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="dismissNotification('{{ report.id }}')"></button>
                 </div>
-                <div class="toast-body text-white">{{ report.text|linebreaksbr }}</div>
+                <div class="toast-body text-white">
+                    <div>
+                        {{ report.text|safe|linebreaksbr }}
+                    </div>
+                    <a class="link-light" data-bs-toggle="collapse" data-bs-target="#collapseDetails" aria-expanded="false" aria-controls="collapseDetails">
+                        Show details
+                    </a>
+                    <div class="collapse" id="collapseDetails">
+                        {{ report.details|safe|linebreaksbr }}
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
