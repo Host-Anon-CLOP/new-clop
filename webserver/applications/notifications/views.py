@@ -17,3 +17,11 @@ class DismissReportView(LoginRequiredMixin, View):
         report.mark_read()
 
         return HttpResponse(status=204)
+
+
+class DismissAllReportsView(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        reports = NationReport.objects.filter(nation__owner=request.user)
+        reports.update(read=True)
+
+        return HttpResponse(status=204)

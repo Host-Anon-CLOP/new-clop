@@ -296,7 +296,7 @@ class Nation(models.Model):
         inflation = self.inflation
         if inflation:
             self.funds -= inflation
-            report_messages.append(f'Inflation has taken away {number(inflation)} bits.')
+            report_messages.append(f'Your ministry of finances burned {number(inflation)} bits to battle inflation.')
 
         # todo government type effects
 
@@ -425,74 +425,86 @@ class Nation(models.Model):
             building.update_from_cache(include_satisfaction_loss=False)
             buildings[building.item_id] = building
 
-        def add_success_message(building_name, building_amount, resource_name, amount):
-            if amount == 0:
-                return
-
-            if amount > 0:
-                verb = 'produced'
-            else:
-                verb = 'consumed' if resource_name != SPECIAL_STATS['satisfaction']['name'] else 'lost'
-
-            report_messages.append(
-                f'{number(building_amount)} of {building_name} {verb} {number(abs(amount))} {resource_name}.'
-            )
-
         for building_id, building in buildings.items():
+            report_messages.append(f'<strong>{number(building.total)} {building.name}:</strong>')
+            building_messages = list()
+
+            def add_success_message(resource_name, amount):
+                if amount == 0:
+                    return
+
+                if amount > 0:
+                    verb = 'produced'
+                else:
+                    special_names = (
+                        SPECIAL_STATS['satisfaction']['name'],
+                        SPECIAL_STATS['se_relation']['name'],
+                        SPECIAL_STATS['nlr_relation']['name'],
+                    )
+                    verb = 'consumed' if resource_name not in special_names else 'caused loss of'
+
+                building_messages.append(
+                    f'{verb.capitalize()} {number(abs(amount))} {resource_name}.'
+                )
+
             if building.disabled:
                 disabled_loss = building.disabled
                 self.satisfaction -= disabled_loss
-                report_messages.append(
-                    f'You lose {number(disabled_loss)} satisfaction for having {number(building.disabled)} of {building.name} disabled.'
+                building_messages.append(
+                    f'You lose {number(disabled_loss)} satisfaction for having {number(building.disabled)} disabled buildings.'
                 )
+            can_afford = True
 
             if consumes := building.consumes_total:
-                can_afford = True
-
                 for resource_id, resource_dict in consumes.items():
                     if resource_id in SPECIAL_STATS:
                         if resource_id == 'funds' and resource_dict['amount'] > self.funds:
                             can_afford = False
-                            report_messages.append(
-                                f'Not enough bits to run {building.name}.'
+                            building_messages.append(
+                                f'Not enough bits to run. '
                                 f'You have {number(self.funds)} out of {number(consumes["funds"]["amount"])}.'
                             )
                     else:
-                        resource = resources[resource_id]
-                        if resource.amount < resource_dict['amount']:
+                        resource = resources.get(resource_id)
+                        current = resource.amount if resource else 0
+                        if current < resource_dict['amount']:
                             can_afford = False
-                            report_messages.append(
-                                f'Not enough {resource.name} to run {building.name}.'
-                                f'You have {number(resource.amount)} out of {number(resource_dict["amount"])}.'
+                            building_messages.append(
+                                f'Not enough {resource_dict["name"]} to run. '
+                                f'You have {number(current)} out of {number(resource_dict["amount"])}.'
                             )
 
                 if can_afford:
                     for resource_id, resource_dict in consumes.items():
-                        add_success_message(building.name, building.total, resource_dict['name'], -resource_dict['amount'])
+                        add_success_message(resource_dict['name'], -resource_dict['amount'])
                         if resource_id in SPECIAL_STATS:
                             setattr(self, resource_id, getattr(self, resource_id) - resource_dict['amount'])
                         else:
                             resources[resource_id].amount -= resource_dict['amount']
                 else:
-                    # buildings.pop(building_id)
                     shutdown_loss = building.total
                     self.satisfaction -= shutdown_loss
-                    report_messages.append(
-                        f'All {building.total} of {building.name} are shut down; you lose {number(shutdown_loss)} satisfaction.'
+                    building_messages.append(
+                        f'You lose {number(shutdown_loss)} satisfaction for having {number(building.total)} buildings shut down.'
                     )
 
-            if produces := building.produces_total:
+            if can_afford and (produces := building.produces_total):
                 for resource_id, resource_dict in produces.items():
-                    add_success_message(building.name, building.total, resource_dict['name'], resource_dict['amount'])
+                    add_success_message(resource_dict['name'], resource_dict['amount'])
                     if resource_id in SPECIAL_STATS:
                         setattr(self, resource_id, getattr(self, resource_id) + resource_dict['amount'])
                     else:
                         resources[resource_id].amount += resource_dict['amount']
 
+            if building_messages:
+                elements = [f'<li>{message}</li>' for message in building_messages]
+                report_messages.append(f'<ul>{"".join(elements)}</ul>')
+
         for resource in resources.values():
             loss = resource.loss
             if loss:
                 resource.amount -= loss
+                # todo add message about dumping oil in the ocean
                 report_messages.append(
                     f'As you have more than {number(CONSTANTS["RESOURCE_LOSS_MIN"])} {resource.name}, {number(loss)} was siphoned off.'
                 )
@@ -525,6 +537,7 @@ class Nation(models.Model):
                 f'Even for the New Lunar Republic, there are limits to hate. Relationship capped at {number(RELATIONSHIP_CAP_MIN)}.'
             )
 
+        # todo tick summary
         report = NationReport(
             nation=self,
             text='tick',

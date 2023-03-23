@@ -26,7 +26,7 @@
             <div
                     class="toast align-items-center border-0
                         {% if report.report_type == REPORT_TYPES.RECIPE %}bg-success
-{#                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.INFO %}bg-info#}
+                        {% elif report.report_type == REPORT_TYPES.TICK %}bg-info
 {#                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-danger#}
                         {% endif %}"
                     style="--bs-toast-max-width: 450px;"
@@ -44,25 +44,43 @@
                     <div>
                         {{ report.text|safe|linebreaksbr }}
                     </div>
-                    <a class="link-light" data-bs-toggle="collapse" data-bs-target="#collapseDetails" aria-expanded="false" aria-controls="collapseDetails">
+                    <a class="link-light" style="pointer-events: auto;" data-bs-toggle="collapse" data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false" aria-controls="collapseDetails">
                         Show details
                     </a>
-                    <div class="collapse" id="collapseDetails">
+                    <div class="collapse" id="collapseDetails-{{ report.id }}">
                         {{ report.details|safe|linebreaksbr }}
+                        <br>
                     </div>
                 </div>
             </div>
         {% endfor %}
-    </div>
+        {% if reports|length > 1 %}
+            <button role="button" class="btn btn-info float-end" style="pointer-events: auto;" onclick="dismissAllNotifications()">Mark all reports as read</button>
+        {% endif %}
+    </div   >
 </div>
 
 <script>
     function dismissNotification(notification_id){
-        // make a post request in background with vanilla js
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `/notifications/report/dismiss/${notification_id}/`, true);
         xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
         xhr.send();
-        console.log('dismissed notification', notification_id);
+    }
+
+    function dismissAllNotifications(){
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `/notifications/report/dismiss_all/`, true);
+        xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
+        xhr.send();
+        dismissAll();
     }
 </script>
+
+<style>
+    .toast-body ul {
+        margin-bottom: -21px;
+        padding-left: 1rem;
+        list-style-type: '- ';
+    }
+</style>

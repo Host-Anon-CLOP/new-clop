@@ -17,3 +17,12 @@ for (let i = 0; i < toasts.length; i++) {
         toast.show();
     }, i*50);
 }
+
+function dismissAll() {
+    for (let i = 0; i < toasts.length; i++) {
+        const toast = bootstrap.Toast.getInstance(toasts[i]);
+        toast.hide();
+    }
+}
+
+window.dismissAll = dismissAll;
