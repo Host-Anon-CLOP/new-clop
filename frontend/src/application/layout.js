@@ -12,11 +12,16 @@ window.bootstrap = bootstrap;
 const toasts = document.getElementsByClassName("toast");
 
 for (let i = 0; i < toasts.length; i++) {
-    setTimeout(() => {
-        const toast = new bootstrap.Toast(toasts[i]);
-        toast.show();
-    }, i*50);
+    // setTimeout(() => {
+    //     const toast = new bootstrap.Toast(toasts[i]);
+    //     toast.show();
+    // }, i*50);
+    const toast = new bootstrap.Toast(toasts[i]);
+    toast.show();
 }
+
+const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 
 function dismissAll() {
     for (let i = 0; i < toasts.length; i++) {

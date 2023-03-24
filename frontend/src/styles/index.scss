@@ -3,6 +3,7 @@ $info: #285fa7;
 $warning: #d58408;
 
 @import "~bootstrap/scss/bootstrap.scss";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
 
 .dropdown:hover .dropdown-menu { // Display dropdown menu on hover
   display: block;
@@ -14,4 +15,18 @@ $warning: #d58408;
 
 .background-secondary {
   background-color: var(--bs-secondary-bg) !important;
+}
+
+.report-body ul {
+    margin-bottom: -21px;
+    padding-left: 1rem;
+    list-style-type: '- ';
+}
+
+.btn-icon {
+    padding: 0;
+    border: none;
+    --bs-btn-color: var(--bs-emphasis-color);
+    --bs-btn-hover-color: var(--bs-tertiary-color);
+    vertical-align: inherit;
 }

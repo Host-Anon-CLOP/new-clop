@@ -22,6 +22,7 @@
                 </div>
             </div>
         {% endfor %}
+        {% if show_reports %}
         {% for report in reports %}
             <div
                     class="toast align-items-center border-0
@@ -40,22 +41,34 @@
                     <small class="text-muted">{{ report.created_at|naturaltime }}</small>
                     <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close" onclick="dismissNotification('{{ report.id }}')"></button>
                 </div>
-                <div class="toast-body text-white">
-                    <div>
-                        {{ report.text|safe|linebreaksbr }}
+                <div class="toast-body report-body text-white d-flex">
+                    <div class="flex-shrink-1 me-2">
+                        <a class="btn btn-icon"
+                           style="pointer-events: auto;"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false"
+                                               aria-controls="collapseDetails">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </a>
                     </div>
-                    <a class="link-light" style="pointer-events: auto;" data-bs-toggle="collapse" data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false" aria-controls="collapseDetails">
-                        Show details
-                    </a>
-                    <div class="collapse" id="collapseDetails-{{ report.id }}">
-                        {{ report.details|safe|linebreaksbr }}
-                        <br>
+                    <div class="flex-grow-1">
+                        <div>
+                            {{ report.text|safe|linebreaksbr }}
+                        </div>
+    {#                    <a class="link-light" style="pointer-events: auto;" data-bs-toggle="collapse" data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false" aria-controls="collapseDetails">#}
+    {#                        Show details#}
+    {#                    </a>#}
+                        <div class="collapse" id="collapseDetails-{{ report.id }}">
+                            {{ report.details|safe|linebreaksbr }}
+                            <br>
+                        </div>
                     </div>
                 </div>
             </div>
         {% endfor %}
         {% if reports|length > 1 %}
             <button role="button" class="btn btn-info float-end" style="pointer-events: auto;" onclick="dismissAllNotifications()">Mark all reports as read</button>
+        {% endif %}
         {% endif %}
     </div   >
 </div>
@@ -76,11 +89,3 @@
         dismissAll();
     }
 </script>
-
-<style>
-    .toast-body ul {
-        margin-bottom: -21px;
-        padding-left: 1rem;
-        list-style-type: '- ';
-    }
-</style>

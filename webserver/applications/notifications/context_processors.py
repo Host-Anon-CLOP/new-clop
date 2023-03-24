@@ -12,5 +12,6 @@ def reports(request):
 
     return {
         'reports': reports,
-        'REPORT_TYPES': {x.name: x.value for x in REPORT_TYPES}
+        'REPORT_TYPES': {x.name: x.value for x in REPORT_TYPES},
+        'show_reports': True,
     }

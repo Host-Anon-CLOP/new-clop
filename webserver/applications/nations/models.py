@@ -230,52 +230,52 @@ class Nation(models.Model):
             )
 
         if consumes := nation_recipe.consumes_total:
-            for resource_id, resource_dict in consumes.items():
-                if resource_id in SPECIAL_STATS:
-                    if resource_id == 'funds' and resource_dict['amount'] > self.funds:
+            for item_id, item_dict in consumes.items():
+                if item_id in SPECIAL_STATS:
+                    if item_id == 'funds' and item_dict['amount'] > self.funds:
                         error_messages.append(
                             f'Not enough bits. '
                             f'You have {number(self.funds)} out of {number(consumes["funds"]["amount"])}.'
                         )
 
-                    setattr(self, resource_id, getattr(self, resource_id) - resource_dict['amount'])
-                    add_success_message(resource_dict['name'], -resource_dict['amount'])
+                    setattr(self, item_id, getattr(self, item_id) - item_dict['amount'])
+                    add_success_message(item_dict['name'], -item_dict['amount'])
                     continue
 
-                current_amount = items_dict[resource_id].amount if resource_id in items_dict else 0
-                if current_amount < resource_dict['amount']:
+                current_amount = items_dict[item_id].amount if item_id in items_dict else 0
+                if current_amount < item_dict['amount']:
                     error_messages.append(
-                        f'Not enough {resource_dict["name"]}. '
-                        f'You have {number(current_amount)} out of {number(resource_dict["amount"])}.'
+                        f'Not enough {item_dict["name"]}. '
+                        f'You have {number(current_amount)} out of {number(item_dict["amount"])}.'
                     )
                 else:
-                    items_dict[resource_id].amount = current_amount - resource_dict['amount']
-                    changed_items_dict[resource_id] = items_dict[resource_id]
-                    add_success_message(resource_dict['name'], -resource_dict['amount'])
+                    items_dict[item_id].amount = current_amount - item_dict['amount']
+                    changed_items_dict[item_id] = items_dict[item_id]
+                    add_success_message(item_dict['name'], -item_dict['amount'])
 
         if error_messages:
             error_messages.insert(0, f'Failed to {nation_recipe.name} x{nation_recipe.amount}.')
             raise InvalidInput('\n'.join(error_messages))
 
         if produces := nation_recipe.produces_total:
-            for resource_id, resource_dict in produces.items():
-                if resource_id in SPECIAL_STATS:
-                    setattr(self, resource_id, getattr(self, resource_id) + resource_dict['amount'])
-                    add_success_message(resource_dict['name'], resource_dict['amount'])
+            for item_id, item_dict in produces.items():
+                if item_id in SPECIAL_STATS:
+                    setattr(self, item_id, getattr(self, item_id) + item_dict['amount'])
+                    add_success_message(item_dict['name'], item_dict['amount'])
                     continue
 
-                if resource_id in items_dict:
-                    current_amount = items_dict[resource_id].amount
-                    items_dict[resource_id].amount = current_amount + resource_dict['amount']
+                if item_id in items_dict:
+                    current_amount = items_dict[item_id].amount
+                    items_dict[item_id].amount = current_amount + item_dict['amount']
                 else:
-                    items_dict[resource_id] = NationItem(
+                    items_dict[item_id] = NationItem(
                         nation=self,
-                        item_id=resource_id[0],
-                        item_type_id=resource_id[1],
-                        amount=resource_dict['amount']
+                        item_id=item_id[0],
+                        item_type_id=item_id[1],
+                        amount=item_dict['amount']
                     )
-                changed_items_dict[resource_id] = items_dict[resource_id]
-                add_success_message(resource_dict['name'], resource_dict['amount'])
+                changed_items_dict[item_id] = items_dict[item_id]
+                add_success_message(item_dict['name'], item_dict['amount'])
 
         report = NationReport(
             nation=self,
@@ -289,6 +289,19 @@ class Nation(models.Model):
             self.save()
             for item in changed_items_dict.values():
                 item.save()
+
+    def add_item(self, item_id, item_type_id, amount):
+        item = self.items.filter(item_id=item_id, item_type_id=item_type_id).first()
+        if item:
+            item.amount += amount
+        else:
+            item = NationItem(
+                nation=self,
+                item_id=item_id,
+                item_type_id=item_type_id,
+                amount=amount
+            )
+        item.save()
 
     def tick(self):
         report_messages = []
@@ -415,6 +428,7 @@ class Nation(models.Model):
                 )
 
         # Buildings and resources calculations
+        resource_type = ContentType.objects.get_for_model(Resource)
         resources = dict()
         for resource in self.resources:
             resource.update_from_cache()
@@ -494,7 +508,15 @@ class Nation(models.Model):
                     if resource_id in SPECIAL_STATS:
                         setattr(self, resource_id, getattr(self, resource_id) + resource_dict['amount'])
                     else:
-                        resources[resource_id].amount += resource_dict['amount']
+                        if resource_id in resources:
+                            resources[resource_id].amount += resource_dict['amount']
+                        else:
+                            resources[resource_id] = NationItem(
+                                nation=self,
+                                item_id=resource_id,
+                                item_type=resource_type,
+                                amount=resource_dict['amount'],
+                            )
 
             if building_messages:
                 elements = [f'<li>{message}</li>' for message in building_messages]

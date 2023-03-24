@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ nation.name }} - reports - >CLOP{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid my-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-9 col-lg-10 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="py-3 card-header d-flex justify-content-center  align-items-center">
+                            <h1 class="mx-3 fs-4 card-title fw-bold text-center">Reports</h1>
+                            <form class="col-lg-2 col-md-3 col-5" method="get" action="{{ request.path }}">
+                                <select class="form-select" name="report_type" onchange="this.form.submit()">
+                                    <option value="">All</option>
+                                    {% for name, value in REPORT_TYPES.items %}
+                                        <option value="{{ value }}" {% if request.GET.report_type == value|stringformat:"i" %}selected{% endif %}>{{ name|title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                        <div class="card-body p-0 table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr class="d-flex">
+                                        <th class="flex-shrink-1 px-3"></th>
+                                        <th class="flex-grow-1">Report</th>
+                                        <th class="flex-shrink-1">Timestamp</th>
+                                        <th class="flex-shrink-1 ps-3">
+                                            <form method="POST" action="{% url 'dismiss_all_reports' %}">
+                                                {% csrf_token %}
+                                                <input name="next" value="{{ request.get_full_path }}" hidden="">
+                                                <button type="submit" class="btn btn-icon">
+                                                    <i class="bi bi-envelope-check" data-bs-toggle="tooltip" data-bs-title="Mark all reports as read"></i>
+                                                </button>
+                                            </form>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {% for report in nation_reports %}
+                                    <tr class="d-flex">
+                                        <td class="flex-shrink-1">
+                                            <a class="btn btn-icon" style="pointer-events: auto;"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false"
+                                               aria-controls="collapseDetails">
+                                                <i class="bi bi-chevron-down"></i>
+                                            </a>
+
+                                        </td>
+                                        <td class="flex-grow-1 report-body">
+                                            <div>
+                                                {{ report.text|safe|linebreaksbr }}
+                                            </div>
+                                            <div class="collapse" id="collapseDetails-{{ report.id }}">
+                                                {{ report.details|safe|linebreaksbr }}
+                                                <br>
+                                            </div>
+                                        </td>
+                                        <td class="flex-shrink-1">
+                                            {{ report.created_at|date:"H:i j.m.Y" }}
+                                        </td>
+                                        <td class="flex-shrink-1">
+                                            <form method="POST" action="{% url 'dismiss_report' report_id=report.id %}">
+                                                {% csrf_token %}
+                                                <input name="next" value="{{ request.get_full_path }}" hidden="">
+
+                                                <button type="submit" class="btn btn-icon"
+                                                        {% if report.read %}disabled=""{% endif %}>
+                                                    <i class="bi {% if report.read %}bi-envelope-open{% else %}bi-envelope-exclamation{% endif %}"
+                                                        data-bs-toggle="tooltip" data-bs-title="Mark report as read"
+                                                    ></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No reports</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{#    <style>#}
+{#        .btn-icon {#}
+{#            padding: 0;#}
+{#            border: none;#}
+{#            --bs-btn-color: var(--bs-emphasis-color);#}
+{#            --bs-btn-hover-color: var(--bs-tertiary-color);#}
+{#            vertical-align: inherit;#}
+{#        }#}
+{#    </style>#}
+{% endblock %}
+
+
