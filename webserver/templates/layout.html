@@ -43,14 +43,16 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'profile' %}">User Profile</a></li>
-                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                         </ul>
                     </li>
                     {% if not user.has_nations %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'create_nation' %}">Create nation</a>
-                    </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'create_nation' %}">Create nation</a>
+                        </li>
                     {% else %}
                         <li class="nav-item dropdown">
                             <a
@@ -66,8 +68,22 @@
                                 <li><a class="dropdown-item" href="{% url 'nation_overview' %}">Overview</a></li>
                                 <li><a class="dropdown-item" href="{% url 'nation_actions' %}">Actions</a></li>
                                 <li><a class="dropdown-item" href="{% url 'reports' %}">Reports</a></li>
-{#                                <li><hr class="dropdown-divider"></li>#}
-{#                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>#}
+                                {#                                <li><hr class="dropdown-divider"></li>#}
+                                {#                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>#}
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a
+                                    class="nav-link dropdown-toggle"
+                                    href=""
+                                    role="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                            >
+                                Globohomo
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="{% url 'market' %}">Market</a></li>
                             </ul>
                         </li>
                     {% endif %}

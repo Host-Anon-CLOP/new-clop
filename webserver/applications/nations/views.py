@@ -5,11 +5,11 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, TemplateView, UpdateView, View
 
 from misc.cached import get_all_recipes
-from misc.errors import exception_to_message
+from misc.errors import exception_to_message, InvalidInput
 from misc.views import HasNationMixin
 
 from .forms import CreateNationForm, EditNationForm
-from .models import NationRecipe
+from .models import NationRecipe, NationBuilding
 
 
 class CreateNationView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -32,47 +32,39 @@ class NationOverview(HasNationMixin, UpdateView):
     success_url = reverse_lazy('nation_overview')
 
     def get_object(self, queryset=None):
-        return self.request.user.profile.active_nation
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['nation'] = context['form'].instance
-
-        return context
+        return self.request.user.nation
 
 
 class BuildingActionView(HasNationMixin, View):
     def post(self, request, *args, **kwargs):
-        data = request.POST
-        building_id = int(data['building_id'])
-        action = data['action']
-        amount = int(data['amount'])
+        building_id = kwargs['building_id']
+        amount = int(request.POST['amount'])
 
-        nation = request.user.profile.active_nation
-        building = nation.buildings.get(id=building_id)
+        nation = request.user.nation
 
         with exception_to_message(request):
-            if action == 'disable':
+            try:
+                building = nation.buildings.get(id=building_id)
+            except NationBuilding.DoesNotExist:
+                raise InvalidInput("Building does not exist")
+
+            if 'disable' in request.POST:
                 building.disable(amount)
                 messages.success(request, f'Disabled {amount} of {building.name}')
-            elif action == 'enable':
+            elif 'enable' in request.POST:
                 building.enable(amount)
                 messages.success(request, f'Enabled {amount} of {building.name}')
-            elif action == 'destroy':
+            elif 'destroy' in request.POST:
                 satisfaction = building.destroy(amount)
                 messages.success(request, f'Destroyed {amount} of {building.name} and gained {satisfaction} satisfaction')
+            else:
+                raise InvalidInput("Unknown action")
 
         return redirect('nation_overview')
 
 
 class NationActionsView(HasNationMixin, TemplateView):
     template_name = 'nations/actions.html'
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['nation'] = self.request.user.profile.active_nation
-
-        return context
 
 
 class RecipeBuyView(HasNationMixin, View):
@@ -81,7 +73,7 @@ class RecipeBuyView(HasNationMixin, View):
         recipe_id = int(kwargs['recipe_id'])
         amount = int(data['amount'])
 
-        nation = request.user.profile.active_nation
+        nation = request.user.nation
         recipe = NationRecipe.no_prefetch.get(id=recipe_id)
         recipe.update_from_cache(recipe_amount=amount)
 

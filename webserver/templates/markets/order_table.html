@@ -1,0 +1,60 @@
+{% load numbers_display %}
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th class="text-end">Price</th>
+        <th class="text-end">Quantity</th>
+        <th class="text-center">{% if action == 'sell' %}Seller{% else %}Buyer{% endif %}</th>
+        <th class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="align-middle">
+    {% for order in orders %}
+        <tr>
+            <td class="text-end">{{ order.price|absolute_number }}</td>
+            <td class="text-end">{{ order.amount|absolute_number }}</td>
+            <td class="text-center">
+                {% include 'misc/nation_flag_name.html' with nation=order.nation %}
+            </td>
+            <td>
+            {% if order.nation.owner_id == request.user.id %}
+                <form method="POST" action="{% url 'cancel_order' order_id=order.id %}">
+                {% csrf_token %}
+                <div class="d-grid">
+                    <input type="submit" class="btn btn-sm btn-outline-danger"
+                           style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                           value="Cancel"
+                    />
+                </div>
+                </form>
+            {% else %}
+                <form method="POST" action="{% url 'fulfill_order' order_id=order.id %}">
+                {% csrf_token %}
+                <input type="number" class="form-control form-control-sm mb-1" style="min-width: 60px"
+                       name="amount" min="1" value="1" max="{{ order.amount }}"/>
+                <div class="row gap-1 mx-0">
+                    <input type="submit" class="col btn btn-sm btn-outline-success"
+                            style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                            value="{% if action == 'sell' %}Buy{% else %}Sell{% endif %}"
+                            name="fulfill"
+                    >
+                    <input type="submit" class="col btn btn-sm btn-outline-warning"
+                            style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                            value="All"
+                            name="fulfill_all"
+                    >
+                </div>
+                </form>
+            {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">{% if action == 'sell' %}No offers{% else %}No orders{% endif %}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+
+</table>

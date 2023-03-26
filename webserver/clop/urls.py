@@ -8,8 +8,8 @@ urlpatterns = [
     path('auth/', include('applications.users.auth_urls')),
     path('user/', include('applications.users.user_urls')),
     path('nation/', include('applications.nations.urls')),
-
     path('notifications/', include('applications.notifications.urls')),
+    path('market/', include('applications.markets.urls')),
     path('admin/', admin.site.urls),
 ]
 

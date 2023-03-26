@@ -28,7 +28,7 @@
                     class="toast align-items-center border-0
                         {% if report.report_type == REPORT_TYPES.RECIPE %}bg-success
                         {% elif report.report_type == REPORT_TYPES.TICK %}bg-info
-{#                        {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}bg-danger#}
+                        {% elif report.report_type == REPORT_TYPES.MARKET %}bg-success
                         {% endif %}"
                     style="--bs-toast-max-width: 450px;"
                     role="alert"
@@ -55,9 +55,6 @@
                         <div>
                             {{ report.text|safe|linebreaksbr }}
                         </div>
-    {#                    <a class="link-light" style="pointer-events: auto;" data-bs-toggle="collapse" data-bs-target="#collapseDetails-{{ report.id }}" aria-expanded="false" aria-controls="collapseDetails">#}
-    {#                        Show details#}
-    {#                    </a>#}
                         <div class="collapse" id="collapseDetails-{{ report.id }}">
                             {{ report.details|safe|linebreaksbr }}
                             <br>

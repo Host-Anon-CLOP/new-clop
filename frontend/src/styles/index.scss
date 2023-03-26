@@ -7,6 +7,8 @@ $warning: #d58408;
 
 .dropdown:hover .dropdown-menu { // Display dropdown menu on hover
   display: block;
+  //inset: 0 auto auto 0;
+  margin: 0;
 }
 
 .form-control::file-selector-button {
@@ -29,4 +31,8 @@ $warning: #d58408;
     --bs-btn-color: var(--bs-emphasis-color);
     --bs-btn-hover-color: var(--bs-tertiary-color);
     vertical-align: inherit;
+}
+
+.btn-form-bg {
+  --bs-btn-bg: var(--bs-form-control-bg)
 }

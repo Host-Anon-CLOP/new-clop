@@ -758,9 +758,9 @@ class NationBuilding(NationItem):
 
     def enable(self, amount: int, save=True):
         if amount < 0:
-            raise InvalidInput('Amount of buildings to enable can`t be less than 0')
+            raise InvalidInput(f'Amount of buildings to enable can`t be less than {number(0)}')
         if amount > self.disabled:
-            raise InvalidInput('Amount of buildings to enable can`t greater than amount of disabled buildings')
+            raise InvalidInput(f'Amount of buildings to enable can`t greater than amount of disabled buildings ({number(self.disabled)})')
 
         self.disabled -= amount
 
@@ -769,9 +769,9 @@ class NationBuilding(NationItem):
 
     def disable(self, amount: int, save=True):
         if amount < 0:
-            raise InvalidInput('Amount of buildings to disable can`t be less than 0')
+            raise InvalidInput(f'Amount of buildings to disable can`t be less than {number(0)}')
         if amount > self.total:
-            raise InvalidInput('Amount of buildings to disable can`t greater than amount of enabled buildings')
+            raise InvalidInput(f'Amount of buildings to disable can`t greater than amount of enabled buildings ({number(self.total)})')
 
         self.disabled += amount
 
@@ -780,13 +780,15 @@ class NationBuilding(NationItem):
 
     def destroy(self, amount: int, save=True):
         if amount < 0:
-            raise InvalidInput('Amount of buildings to destroy can`t be less than 0')
+            raise InvalidInput(f'Amount of buildings to destroy can`t be less than {number(0)}')
         if amount > self.amount:
-            raise InvalidInput('Amount of buildings to destroy can`t be greater than total amount of buildings')
+            raise InvalidInput(f'Amount of buildings to destroy can`t be greater than total amount of buildings ({number(self.amount)})')
 
         satisfaction = self.satisfaction_on_destroy * amount
 
         self.amount -= amount
+        self.disabled = max(0, self.disabled - amount)
+
         self.nation.satisfaction += satisfaction
 
         if save:

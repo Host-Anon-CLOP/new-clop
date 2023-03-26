@@ -62,32 +62,39 @@
                 {% endfor %}
             </td>
             <td>
-                <div class="d-flex flex-row mb-1">
-                    <input type="number" class="form-control" min="1" max="{{ building.amount }}" value="1"
-                           id="{{ building.item_id }}">
-                </div>
-                <div class="d-flex flex-row gap-1 btn-group">
-                    <button
-                            class="btn btn-sm btn-outline-danger"
-                            onclick="onBuildingButton('destroy', {{ building.item_id }}, '{{ building.name }}')"
-                    >
-                        Destroy
-                    </button>
-                    <button
-                            class="btn btn-sm btn-outline-warning"
-                            onclick="onBuildingButton('disable', {{ building.item_id }}, '{{ building.name }}')"
-                            {% if building.total == 0 %}disabled{% endif %}
-                    >
-                        Disable
-                    </button>
-                    <button
-                            class="btn btn-sm btn-outline-success"
-                            onclick="onBuildingButton('enable', {{ building.item_id }}, '{{ building.name }}')"
-                            {% if building.disabled == 0 %}disabled{% endif %}
-                    >
-                        Enable
-                    </button>
-                </div>
+                <form
+                        method="POST"
+                        action="{% url 'building_action' building_id=building.id %}"
+                >
+                    {% csrf_token %}
+                    <div class="d-flex flex-row mb-1">
+                        <input type="number" class="form-control" min="1" max="{{ building.amount }}" value="1"
+                               name="amount">
+                    </div>
+                    <div class="d-flex flex-row gap-1 btn-group">
+                        <input
+                                class="btn btn-sm btn-outline-danger"
+                                type="submit"
+                                name="destroy"
+                                value="Destroy"
+                                onclick="event.preventDefault(); submitForm(this.form, '{{ building.name }}')"
+                        >
+                        <input
+                                class="btn btn-sm btn-outline-warning"
+                                {% if building.total == 0 %}disabled{% endif %}
+                                type="submit"
+                                name="disable"
+                                value="Disable"
+                        >
+                        <input
+                                class="btn btn-sm btn-outline-success"
+                                {% if building.disabled == 0 %}disabled{% endif %}
+                                type="submit"
+                                name="enable"
+                                value="Enable"
+                        >
+                    </div>
+                </form>
             </td>
         </tr>
     {% endfor %}
@@ -109,43 +116,19 @@
         </div>
     </div>
 </div>
-<form method="POST" action="{% url 'building_action' %}" id="building_action" hidden>
-    {% csrf_token %}
-    <input type="number" id="building_id" name="building_id">
-    <input type="number" id="amount" name="amount">
-    <input type="text" id="action" name="action">
-</form>
 
 <script>
-    function onBuildingButton(action, building_id, building_name) {
-        const amount = document.getElementById(building_id).value
+    function submitForm(form, building_name) {
+        const submitButton = form.querySelector('input[name="destroy"]');
+        const amount = new FormData(form).get('amount')
 
-        if (action === 'destroy') {
-            const modalElement = document.getElementById('destroy_modal')
-            modalElement.querySelector('.modal-title').innerText = `Destroy ${amount} ${building_name}?`
+        const modalElement = document.getElementById('destroy_modal')
+        const modalButton = document.getElementById('destroy_submit')
 
-            const modalButton = document.getElementById('destroy_submit')
-            modalButton.onclick = () => submitRequest(action, building_id, amount)
+        modalElement.querySelector('.modal-title').innerText = `Destroy ${amount} ${building_name}?`
+        modalButton.onclick = () => form.requestSubmit(submitButton)
 
-            const modal = new bootstrap.Modal(modalElement);
-            modal.show()
-        } else if (action === 'disable') {
-            submitRequest(action, building_id, amount)
-        } else if (action === 'enable') {
-            submitRequest(action, building_id, amount)
-        }
-    }
-
-    function submitRequest(action, building, amount) {
-        const form = document.getElementById('building_action')
-        const building_id_input = document.getElementById('building_id')
-        const amount_input = document.getElementById('amount')
-        const action_input = document.getElementById('action')
-
-        building_id_input.value = building
-        amount_input.value = amount
-        action_input.value = action
-
-        form.submit()
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show()
     }
 </script>

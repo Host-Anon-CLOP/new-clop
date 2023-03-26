@@ -29,6 +29,10 @@ class User(AbstractUser):
     def has_multiple_nations(self):
         return self.nations.count() > 1
 
+    @cached_property
+    def nation(self):
+        return self.profile.active_nation
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, related_name='profile')

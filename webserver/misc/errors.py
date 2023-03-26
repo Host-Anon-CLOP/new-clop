@@ -11,5 +11,5 @@ class InvalidInput(Exception):
 def exception_to_message(request):
     try:
         yield None
-    except InvalidInput as exception:
+    except (InvalidInput, ValueError) as exception:
         messages.error(request, str(exception))

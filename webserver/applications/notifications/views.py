@@ -16,13 +16,12 @@ class ReportsView(HasNationMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context['show_reports'] = False
 
-        nation = self.request.user.profile.active_nation
+        nation = self.request.user.nation
         reports = NationReport.objects.filter(nation=nation)
 
         if report_type := self.request.GET.get('report_type', None):
             reports = reports.filter(report_type=report_type)
         context['nation_reports'] = reports
-        context['nation'] = nation
 
         return context
 
@@ -31,7 +30,7 @@ class DismissReportView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         report_id = kwargs.get('report_id')
         report = NationReport.objects.get(pk=report_id)
-        if report.nation.owner != request.user:
+        if report.nation.owner_id != request.user.id:
             raise PermissionDenied()
 
         report.mark_read()

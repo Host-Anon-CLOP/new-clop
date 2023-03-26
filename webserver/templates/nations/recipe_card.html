@@ -96,7 +96,6 @@
     <div class="card-footer p-2">
         <form method="POST" action="{% url 'recipe_buy' recipe_id=recipe.id %}">
         {% csrf_token %}
-{#        <input type="hidden" name="recipe_id" value="{{ recipe.id }}" hidden/>#}
         <div class="input-group row gap-1 ms-0">
             <input type="number" class="col-3 form-control" style="flex-basis: 50px;" name="amount" min="1" value="1"/>
             <button class="col-9 btn btn-outline-success" style="--bs-btn-bg: var(--bs-form-control-bg)">{{ recipe.name }}</button>

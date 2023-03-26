@@ -8,6 +8,7 @@ class REPORT_TYPES(models.IntegerChoices):
     RECIPE = (1, 'Recipe')
     DESTROY = (2, 'Destroy')
     TICK = (3, 'Tick')
+    MARKET = (4, 'Market')
     # todo attacks etc
 
 

@@ -153,7 +153,8 @@ class Command(BaseCommand):
         energy = resource(
             name='Energy',
             icon=icons / 'Energy.png',
-            description='Batteries, watts, juice- call it what you want, you need more of this, whether you burn oil for it or not.'
+            description='Batteries, watts, juice- call it what you want, you need more of this, whether you burn oil for it or not.',
+            tradable=False,
         )
 
         vehicle_parts = resource(

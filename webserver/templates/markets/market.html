@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block title %}Market - >CLOP{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid my-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-10 col-lg-12 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="py-3 card-header d-flex flex-column justify-content-center align-items-center">
+                            <h1 class="mx-3 fs-4 card-title fw-bold text-center">
+                                Market{% if selected_item %}:{% endif %}
+                                {% if selected_item %}
+                                    <span class="fw-normal">{{ item.name|title }}</span>
+                                    {% if item.icon %}
+                                        <img class="d-inline" src="{{ item.icon.url }}" alt="{{ item.name }}">
+                                    {% endif %}
+                                {% endif %}
+                            </h1>
+                            {#                            <form class="col-lg-3 col-md-4 col-6" method="get" action="{{ request.path }}">#}
+                            {#                                <select class="form-select" name="item" onchange="this.form.submit()">#}
+                            {#                                    <option></option>#}
+                            {#                                    {% for type_name, type_id, items in tradables %}#}
+                            {#                                        <optgroup label="{{ type_name|title }}">#}
+                            {#                                            {% for item in items %}#}
+                            {#                                                <option value="{{ type_id }}-{{ item.id }}"#}
+                            {#                                                        {% if type_id == selected_item.0 and item.id == selected_item.1 %}selected{% endif %}#}
+                            {#                                                >#}
+                            {#                                                    {{ item.name|title }}#}
+                            {#                                                </option>#}
+                            {#                                            {% endfor %}#}
+                            {#                                        </optgroup>#}
+                            {#                                    {% endfor %}#}
+                            {#                                </select>#}
+                            {#                            </form>#}
+                            <div class="btn-group">
+                                {% for type_name, type_id, items in tradables %}
+                                    <div class="dropdown btn-group">
+                                        <button class="btn btn-info dropdown-toggle" type="button"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                            {{ type_name|title }}
+                                        </button>
+                                        <ul class="dropdown-menu market-dropdown">
+                                            {% for item in items %}
+                                                <li>
+                                                    <a class="dropdown-item px-2 {% if type_id == selected_item.0 and item.id == selected_item.1 %}active{% endif %}"
+                                                       href="{{ request.path }}?item={{ type_id }}-{{ item.id }}"
+                                                    >
+                                                        {% if item.icon %}
+                                                            <img class="d-inline pe-2" src="{{ item.icon.url }}"
+                                                                 alt="{{ item.name }}">{% endif %}
+                                                        {{ item.name|title }}
+                                                    </a>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {% if selected_item %}
+                            <form class="row justify-content-center align-items-end px-3" method="POST" action="{% url 'create_order' %}">
+                                {% csrf_token %}
+                                <input name="item_type_id" value="{{ selected_item.0 }}" hidden="">
+                                <input name="item_id" value="{{ selected_item.1 }}" hidden="">
+
+                                <div class="col-lg-3 col-md-8 mx-2 pb-1">
+                                    <div class="row gap-2">
+                                        <div class="col px-0">
+                                            <label for="amount" class="form-label">Item Amount</label>
+                                            <input type="number" class="form-control mb-1" style="min-width: 60px"
+                                                   name="amount" min="0" value="1" max=""/>
+                                        </div>
+                                        <div class="col px-0">
+                                            <label for="price" class="form-label">Unit Price</label>
+                                            <input type="number" class="form-control mb-1" style="min-width: 60px"
+                                                   name="price" min="1000" value="1000" max="5000000"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-8 mx-2 pb-2">
+                                    <div class="row gap-2 ">
+                                        <input type="submit" class="col btn btn-outline-success"
+                                               style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                                               value="Sell"
+                                               name="sell"
+                                        >
+                                        <input type="submit" class="col btn btn-outline-danger"
+                                               style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                                               value="Buy"
+                                               name="buy"
+                                        >
+                                    </div>
+                                </div>
+                            </form>
+                            <hr>
+                            <div class="row mx-0">
+                                <div class="col-md-6 col-12 table-responsive" style="margin-left: -1px">
+                                    <h4 class="card-title text-center">Sell Offers</h4>
+                                    {% include 'markets/order_table.html' with orders=sell_orders action='sell' %}
+                                </div>
+                                <div class="vr p-0 d-none d-md-block"></div>
+                                <div class="col-md-6 col-sm-12 table-responsive" style="margin-left: -1px">
+                                    <h4 class="card-title text-center">Buy Orders</h4>
+                                    {% include 'markets/order_table.html' with orders=buy_orders action='buy' %}
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="text-center">Select item to trade from the dropdowns above</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <style>
+        .market-dropdown {
+            transform: translate(0px, 38px) !important;
+        }
+
+    </style>
+{% endblock %}
+
+
