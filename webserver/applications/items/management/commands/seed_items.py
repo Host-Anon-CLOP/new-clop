@@ -401,6 +401,8 @@ class Command(BaseCommand):
             ),
         )
 
+        print('Successfully seeded items database')
+
         # Update schedules
         update_items_name = 'Update items cache'
         update_items_defaults = dict(
@@ -429,4 +431,7 @@ class Command(BaseCommand):
             name=tick_nations_name,
             defaults=tick_nations_defaults,
         )
+
+        print('Successfully updated schedules')
+
 

@@ -21,4 +21,8 @@ echo "Executing database migrations"
 python manage.py migrate --noinput
 echo "Migrations executed"
 
+echo "Seeding database"
+python manage.py seed_items
+echo "Database seeded"
+
 exec "$@"
