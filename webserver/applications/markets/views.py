@@ -95,8 +95,11 @@ class CancelOrderView(HasNationMixin, View):
                          f'Successfully cancelled {order_type_str[order.order_type]} for {number(order.amount)} {order.item.name} '
                          f'at {number(order.price)} bits each ({number(order.total_price)} bits total)')
 
-        response = redirect('market')
-        response['Location'] += f'?item={order.item_type_id}-{order.item_id}'
+        if not request.POST.get('previous'):
+            response = redirect('market')
+            response['Location'] += f'?item={order.item_type_id}-{order.item_id}'
+        else:
+            response = redirect(request.POST['previous'])
         return response
 
 
@@ -129,3 +132,16 @@ class FulfillOrderView(HasNationMixin, View):
         response = redirect('market')
         response['Location'] += f'?item={order.item_type_id}-{order.item_id}'
         return response
+
+
+class MyOrdersView(HasNationMixin, TemplateView):
+    template_name = 'markets/my_orders.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # context['orders'] = Order.objects.filter(nation=self.request.user.nation).select_related('item').order_by('-created_at')
+        context['sell_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.SELL).prefetch_related('item').order_by('item_type_id', 'item_id', 'price', '-created_at')
+        context['buy_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.BUY).prefetch_related('item').order_by('item_type_id', 'item_id', '-price', '-created_at')
+
+        return context

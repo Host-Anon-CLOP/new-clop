@@ -3,15 +3,25 @@ from django.utils.translation import gettext_lazy as _
 
 from .models import Nation, NationItem
 
+from applications.markets.models import Order
+
 
 class NationItemInline(admin.TabularInline):
     model = NationItem
     extra = 1
 
 
+class OrderInline(admin.TabularInline):
+    model = Order
+    extra = 1
+    fields = ('item_id', 'item_type', 'amount', 'price', 'order_type', 'created_at', )
+    readonly_fields = ('created_at', )
+    show_change_link = True
+
+
 @admin.register(Nation)
 class NationAdmin(admin.ModelAdmin):
-    inlines = (NationItemInline, )
+    inlines = (NationItemInline, OrderInline,)
 
     fieldsets = (
         (None, {'fields': ('owner', 'name', 'description', 'flag', 'region', 'subregion')}),

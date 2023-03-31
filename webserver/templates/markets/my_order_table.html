@@ -1,0 +1,41 @@
+{% load numbers_display %}
+
+<table class="table table-striped">
+    <thead>
+    <tr>
+        <th></th>
+        <th>Item</th>
+        <th class="text-end">Price</th>
+        <th class="text-end">Quantity</th>
+        <th class="text-center">Actions</th>
+    </tr>
+    </thead>
+    <tbody class="align-middle">
+    {% for order in orders %}
+        <tr>
+            <td style="width: 1%">{% if order.item.icon %}<img src="{{ order.item.icon.url }}" alt="{{ order.item.name }}" height="20" width="20" style="vertical-align: sub">{% endif %}</td>
+            <td>{{ order.item.name }}</td>
+            <td class="text-end">{{ order.price|absolute_number }}</td>
+            <td class="text-end">{{ order.amount|absolute_number }}</td>
+            <td>
+                <form method="POST" action="{% url 'cancel_order' order_id=order.id %}">
+                {% csrf_token %}
+                <input name="previous" value="{{ request.get_full_path }}" hidden="">
+                <div class="d-grid">
+                    <input type="submit" class="btn btn-sm btn-outline-danger"
+                           style="min-width: 60px; --bs-btn-bg: var(--bs-form-control-bg)"
+                           value="Cancel"
+                    />
+                </div>
+                </form>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4" class="text-center">{% if action == 'sell' %}No offers{% else %}No orders{% endif %}</td>
+        </tr>
+    {% endfor %}
+
+    </tbody>
+
+</table>

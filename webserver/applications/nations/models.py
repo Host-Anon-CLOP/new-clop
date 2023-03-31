@@ -39,7 +39,7 @@ CONSTANTS = settings.GAME_CONSTANTS
 
 def upload_to(instance, filename):
     salt = uuid.uuid4()
-    return f"flags/{salt}_{filename}".replace("-", "_")
+    return f"nation_flags/{salt}_{filename}".replace("-", "_")
 
 
 class Nation(models.Model):
@@ -111,6 +111,10 @@ class Nation(models.Model):
     @property
     def buildings(self):
         return NationBuilding.objects.filter(nation=self)
+
+    @property
+    def alliance(self):
+        return self.owner.alliance
 
     @cached_property
     def per_tick(self):

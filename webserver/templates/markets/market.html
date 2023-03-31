@@ -14,26 +14,10 @@
                                 {% if selected_item %}
                                     <span class="fw-normal">{{ item.name|title }}</span>
                                     {% if item.icon %}
-                                        <img class="d-inline" src="{{ item.icon.url }}" alt="{{ item.name }}">
+                                        <img class="d-inline" src="{{ item.icon.url }}" alt="{{ item.name }}" height="24" width="24" style="vertical-align: sub">
                                     {% endif %}
                                 {% endif %}
                             </h1>
-                            {#                            <form class="col-lg-3 col-md-4 col-6" method="get" action="{{ request.path }}">#}
-                            {#                                <select class="form-select" name="item" onchange="this.form.submit()">#}
-                            {#                                    <option></option>#}
-                            {#                                    {% for type_name, type_id, items in tradables %}#}
-                            {#                                        <optgroup label="{{ type_name|title }}">#}
-                            {#                                            {% for item in items %}#}
-                            {#                                                <option value="{{ type_id }}-{{ item.id }}"#}
-                            {#                                                        {% if type_id == selected_item.0 and item.id == selected_item.1 %}selected{% endif %}#}
-                            {#                                                >#}
-                            {#                                                    {{ item.name|title }}#}
-                            {#                                                </option>#}
-                            {#                                            {% endfor %}#}
-                            {#                                        </optgroup>#}
-                            {#                                    {% endfor %}#}
-                            {#                                </select>#}
-                            {#                            </form>#}
                             <div class="btn-group">
                                 {% for type_name, type_id, items in tradables %}
                                     <div class="dropdown btn-group">
@@ -123,5 +107,3 @@
 
     </style>
 {% endblock %}
-
-
