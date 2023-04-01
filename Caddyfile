@@ -1,4 +1,4 @@
-{$DOMAIN_NAME} {
+http://{$DOMAIN_NAME} {
     handle /static/* {
         root * /fileserver
         file_server

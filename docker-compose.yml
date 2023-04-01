@@ -124,9 +124,7 @@ services:
       - internal
       - default
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
+      - "8088:80"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
