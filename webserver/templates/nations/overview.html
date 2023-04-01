@@ -12,7 +12,7 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center justify-content-center">
                             {% if nation.flag %}
-                            <img src="{{ nation.flag.url }}" alt="Flag of {{ nation.name }}" height="40px" width="66px">
+                            <img src="{{ nation.flag.url }}" alt="{{ nation.name }}" height="40px" width="66px">
                             {% endif %}
                             <h1 class="mx-2 my-0 fs-4 card-title fw-bold d-inline">{{ nation.name }}</h1>
                         </div>
@@ -26,7 +26,7 @@
             <div class="col-xl-4 col-lg-6 col-md-8 col-sm-10 col-xs-12 mb-4">
                 <div class="card h-100">
                     <div class="card-header">
-                        <h1 class="mx-2 my-0 fs-4 card-title fw-bold text-center">Edit nation</h1>
+                        <h2 class="mx-2 my-0 fs-5 card-title fw-bold text-center">Edit nation</h2>
                     </div>
                     <div class="card-body px-3 px-md-4">
                         {% include "nations/edit_nation.html" %}
@@ -38,9 +38,9 @@
             <div class="col-xl-6 col-lg-5 col-md-10 col-sm-10 col-xs-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h1 class="mx-2 my-0 fs-4 card-title fw-bold text-center">Resources</h1>
+                        <h2 class="mx-2 my-0 fs-5 card-title fw-bold text-center">Resources</h2>
                     </div>
-                    <div class="card-body px-3 px-md-4 py-0 table-responsive">
+                    <div class="card-body p-0 table-responsive">
                         {% include "nations/resources_table.html" %}
                     </div>
                 </div>
@@ -48,9 +48,9 @@
             <div class="col-xl-6 col-lg-7 col-md-10 col-sm-10 col-xs-12 mb-4">
                 <div class="card">
                     <div class="card-header">
-                        <h1 class="mx-2 my-0 fs-4 card-title fw-bold text-center">Buildings</h1>
+                        <h2 class="mx-2 my-0 fs-5 card-title fw-bold text-center">Buildings</h2>
                     </div>
-                    <div class="card-body px-3 px-md-4 py-0 table-responsive">
+                    <div class="card-body p-0 table-responsive">
                         {% include "nations/buildings_table.html" %}
                     </div>
                 </div>

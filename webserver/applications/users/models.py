@@ -30,6 +30,10 @@ class User(AbstractUser):
         return self.nations.count() > 1
 
     @cached_property
+    def has_alliance(self):
+        return self.alliance is not None
+
+    @cached_property
     def nation(self):
         return self.profile.active_nation
 

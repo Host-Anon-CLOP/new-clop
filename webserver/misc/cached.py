@@ -1,32 +1,40 @@
 import functools
 
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
+from django.core.cache import cache, caches
 
 
-def reset_cache():
-    get_all_buildings.cache_clear()
-    get_all_resources.cache_clear()
-    get_all_recipes.cache_clear()
-    get_all_items.cache_clear()
+local_cache = caches['local']
 
 
-@functools.cache
+def cache_func_local(func):
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        key = f'{func.__name__}{args}{kwargs}'
+        result = local_cache.get(key)
+        if result is None:
+            result = func(*args, **kwargs)
+            local_cache.set(key, result)
+        return result
+    return wrapper
+
+
+@cache_func_local
 def get_all_buildings():
     return cache.get('buildings')
 
 
-@functools.cache
+@cache_func_local
 def get_all_resources():
     return cache.get('resources')
 
 
-@functools.cache
+@cache_func_local
 def get_all_recipes():
     return cache.get('recipes')
 
 
-@functools.cache
+@cache_func_local
 def get_all_items():
     from applications.items.models import Building, Resource
 

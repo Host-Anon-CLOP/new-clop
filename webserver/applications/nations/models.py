@@ -31,15 +31,14 @@ from misc.cached import (
     get_all_resources,
 )
 from misc.errors import InvalidInput
+from misc.files import PathAndRename
 
 from .managers import NationBuildingManager, NationResourceManager
 
 CONSTANTS = settings.GAME_CONSTANTS
 
 
-def upload_to(instance, filename):
-    salt = uuid.uuid4()
-    return f"nation_flags/{salt}_{filename}".replace("-", "_")
+flag_upload = PathAndRename('nation_flags')
 
 
 class Nation(models.Model):
@@ -47,7 +46,7 @@ class Nation(models.Model):
 
     name = models.CharField(max_length=50, blank=False, unique=True)
     description = models.TextField(max_length=1000, blank=True)
-    flag = models.ImageField(upload_to=upload_to, blank=True, null=True)
+    flag = models.ImageField(upload_to=flag_upload, blank=True, null=True)
 
     created_on = models.DateTimeField(auto_now_add=True)
     age = models.PositiveIntegerField(default=0)

@@ -8,19 +8,19 @@
             <div class="row justify-content-center">
                 <div class="col-xl-10 col-lg-12 col-md-12 mb-4">
                     <div class="card">
-                        <div class="py-3 card-header d-flex flex-column justify-content-center align-items-center">
+                        <div class="card-header">
                             <h1 class="mx-3 fs-4 card-title fw-bold text-center">
                                 My orders
                             </h1>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body px-0">
                             <div class="row mx-0">
-                                <div class="col-md-6 col-12 table-responsive" style="margin-left: -1px">
+                                <div class="col-md-6 col-12 table-responsive px-0" style="margin-left: -1px">
                                     <h4 class="card-title text-center">Sell Offers</h4>
                                     {% include 'markets/my_order_table.html' with orders=sell_orders action='sell' %}
                                 </div>
                                 <div class="vr p-0 d-none d-md-block"></div>
-                                <div class="col-md-6 col-sm-12 table-responsive" style="margin-left: -1px">
+                                <div class="col-md-6 col-sm-12 table-responsive px-0" style="margin-left: -1px">
                                     <h4 class="card-title text-center">Buy Orders</h4>
                                     {% include 'markets/my_order_table.html' with orders=buy_orders action='buy' %}
                                 </div>

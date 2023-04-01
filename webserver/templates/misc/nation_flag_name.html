@@ -1,5 +1,5 @@
 {% if nation.flag %}
-<img src="{{ nation.flag.url }}" class="me-2" alt="{{ nation.name }}" height="18px" width="30px">
+<img src="{{ nation.flag.url }}" class="me-2" alt="{{ nation.name }}" height="18px" width="30px" style="vertical-align: sub">
 {% endif %}
 <strong class="d-inline-block">{{ nation.name }}</strong>
 <small>({{ nation.get_region_display }})</small>

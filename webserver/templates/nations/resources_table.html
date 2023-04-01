@@ -1,6 +1,6 @@
 {% load numbers_display %}
 
-<table class="table table-sm">
+<table class="table table-sm table-striped table-hover">
     <thead>
         <tr>
             <th></th>
@@ -10,20 +10,20 @@
             <th class="text-end">Consumed</th>
             <th class="text-end">Loss</th>
             <th class="text-end">Net</th>
-            <th class="text-end">Ticks worth</th>
+            <th class="text-end pe-3">Ticks worth</th>
         </tr>
     </thead>
     <tbody class="align-middle">
         {% for resource in nation.resources_list %}
         <tr>
-            <td>{% if resource.icon %}<img src="{{ resource.icon }}" alt="{{ resource.name }}" height="20" width="20" style="vertical-align: sub">{% endif %}</td>
+            <td class="ps-3">{% if resource.icon %}<img src="{{ resource.icon }}" alt="{{ resource.name }}" height="20" width="20" style="vertical-align: sub">{% endif %}</td>
             <td>{{ resource.name }}</td>
             <td class="text-end">{{ resource.amount|absolute_number }}</td>
             <td class="text-end">{{ resource.produced|delta_number }}</td>
             <td class="text-end">{{ resource.consumed|delta_number:True }}</td>
             <td class="text-end">{{ resource.loss|delta_number:True }}</td>
             <td class="text-end">{{ resource.net|delta_number }}</td>
-            <td class="text-end">{{ resource.ticks_worth }}</td>
+            <td class="text-end pe-3">{{ resource.ticks_worth }}</td>
         </tr>
         {% endfor %}
     </tbody>

@@ -1,6 +1,6 @@
 {% load numbers_display %}
 
-<table class="table table-sm">
+<table class="table table-sm table-hover">
     <thead>
     <tr>
         <th></th>
@@ -15,7 +15,7 @@
     <tbody class="align-middle">
     {% for building in nation.buildings_dict.values %}
         <tr>
-            <td>
+            <td class="ps-2">
             {% if building.icon %}
                 <img src="{{ building.icon }}" alt="{{ building.name }}" height="20" style="vertical-align: sub">
             {% endif %}
@@ -61,7 +61,7 @@
                     </div>
                 {% endfor %}
             </td>
-            <td>
+            <td class="pe-2">
                 <form
                         method="POST"
                         action="{% url 'building_action' building_id=building.id %}"
@@ -73,21 +73,21 @@
                     </div>
                     <div class="d-flex flex-row gap-1 btn-group">
                         <input
-                                class="btn btn-sm btn-outline-danger"
+                                class="btn btn-sm btn-outline-danger btn-form-bg"
                                 type="submit"
                                 name="destroy"
                                 value="Destroy"
                                 onclick="event.preventDefault(); submitForm(this.form, '{{ building.name }}')"
                         >
                         <input
-                                class="btn btn-sm btn-outline-warning"
+                                class="btn btn-sm btn-outline-warning btn-form-bg"
                                 {% if building.total == 0 %}disabled{% endif %}
                                 type="submit"
                                 name="disable"
                                 value="Disable"
                         >
                         <input
-                                class="btn btn-sm btn-outline-success"
+                                class="btn btn-sm btn-outline-success btn-form-bg"
                                 {% if building.disabled == 0 %}disabled{% endif %}
                                 type="submit"
                                 name="enable"

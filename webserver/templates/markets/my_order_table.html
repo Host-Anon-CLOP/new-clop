@@ -1,6 +1,6 @@
 {% load numbers_display %}
 
-<table class="table table-striped">
+<table class="table table-striped table-hover mb-0">
     <thead>
     <tr>
         <th></th>
@@ -13,11 +13,15 @@
     <tbody class="align-middle">
     {% for order in orders %}
         <tr>
-            <td style="width: 1%">{% if order.item.icon %}<img src="{{ order.item.icon.url }}" alt="{{ order.item.name }}" height="20" width="20" style="vertical-align: sub">{% endif %}</td>
+            <td class="ps-3" style="width: 1%">
+                {% if order.item.icon %}
+                    <img src="{{ order.item.icon.url }}" alt="{{ order.item.name }}" height="20" width="20" style="vertical-align: sub">
+                {% endif %}
+            </td>
             <td>{{ order.item.name }}</td>
             <td class="text-end">{{ order.price|absolute_number }}</td>
             <td class="text-end">{{ order.amount|absolute_number }}</td>
-            <td>
+            <td class="pe-2">
                 <form method="POST" action="{% url 'cancel_order' order_id=order.id %}">
                 {% csrf_token %}
                 <input name="previous" value="{{ request.get_full_path }}" hidden="">

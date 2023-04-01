@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}My Alliance - {{ alliance.name }} - >CLOP{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid my-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-4 col-lg-6 col-md-8 col-sm-10 col-xs-12 mb-4">
+                    <div class="card">
+                        <div class="py-2 card-header">
+                            <div class="d-flex align-items-center justify-content-center">
+                                {% if alliance.flag %}
+                                <img src="{{ alliance.flag.url }}" alt="Flag of {{ alliance.name }}" height="40px" width="66px">
+                                {% endif %}
+                                <h1 class="mx-2 my-0 fs-4 card-title fw-bold d-inline">{{ alliance.name }}</h1>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-center mb-0">{{ alliance.description|default:'No description.' }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-xl-6 col-lg-7 col-md-8 col-sm-10 col-xs-12 mb-4">
+                    <div class="card">
+                        <div class="py-2 card-header">
+                            <h1 class="mx-3 fs-4 card-title fw-bold text-center">
+                                Members
+                            </h1>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                {% include 'alliances/member_table.html' with members=alliance.members %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+{% endblock %}

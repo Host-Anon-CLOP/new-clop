@@ -43,9 +43,9 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body px-0">
                             {% if selected_item %}
-                            <form class="row justify-content-center align-items-end px-3" method="POST" action="{% url 'create_order' %}">
+                            <form class="row justify-content-center align-items-end px-4" method="POST" action="{% url 'create_order' %}">
                                 {% csrf_token %}
                                 <input name="item_type_id" value="{{ selected_item.0 }}" hidden="">
                                 <input name="item_id" value="{{ selected_item.1 }}" hidden="">
@@ -81,12 +81,12 @@
                             </form>
                             <hr>
                             <div class="row mx-0">
-                                <div class="col-md-6 col-12 table-responsive" style="margin-left: -1px">
+                                <div class="col-md-6 col-12 table-responsive px-0" style="margin-left: -1px">
                                     <h4 class="card-title text-center">Sell Offers</h4>
                                     {% include 'markets/order_table.html' with orders=sell_orders action='sell' %}
                                 </div>
                                 <div class="vr p-0 d-none d-md-block"></div>
-                                <div class="col-md-6 col-sm-12 table-responsive" style="margin-left: -1px">
+                                <div class="col-md-6 col-sm-12 table-responsive px-0" style="margin-left: -1px">
                                     <h4 class="card-title text-center">Buy Orders</h4>
                                     {% include 'markets/order_table.html' with orders=buy_orders action='buy' %}
                                 </div>

@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}Alliances - >CLOP{% endblock %}
+
+{% block content %}
+    <section>
+        <div class="container-fluid my-5">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-9 col-md-10 col-sm-12 mb-4">
+                    <div class="card">
+                        <div class="py-3 card-header">
+                            <h1 class="mx-3 fs-4 card-title fw-bold text-center">
+                                Alliances
+                            </h1>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                {% include 'alliances/alliances_table.html' with alliances=alliances %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-from misc.validators import max_file_size
+from misc.files import max_file_size
 
 from .models import Nation
 

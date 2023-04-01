@@ -48,6 +48,7 @@ class Common(Configuration):
         'applications.items',
         'applications.notifications',
         'applications.markets',
+        'applications.alliances',
     ]
 
     MIDDLEWARE = [
@@ -101,6 +102,10 @@ class Common(Configuration):
         'default': {
             'BACKEND': 'django.core.cache.backends.redis.RedisCache',
             'LOCATION': f'redis://:{get_secret_file("REDIS_PASSWORD_FILE")}@{env("REDIS_HOST", default="127.0.0.1")}:{env("REDIS_PORT", default=6379, cast=int)}',
+        },
+        'local': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'TIMEOUT': 60*5,
         }
     }
 

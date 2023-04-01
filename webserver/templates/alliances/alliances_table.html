@@ -1,0 +1,39 @@
+{% load numbers_display %}
+
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Leader</th>
+            <th>Active members</th>
+            <th>Active nations</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for alliance in alliances %}
+            <tr>
+                <td class="ps-3" style="width: 1%">
+                    {% if alliance.flag %}
+                        <img src="{{ alliance.flag.url }}" alt="{{ alliance.name }}" class="flag" height="18" width="30">
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ alliance.get_absolute_url }}" class="text-body">{{ alliance.name }}</a>
+                </td>
+                <td>
+{#                    // todo flag#}
+                    <a href="{{ alliance.leader.user.url }}" class="text-body">{{ alliance.leader.user.username }}</a>
+                </td>
+                <td>{{ alliance.active_members|absolute_number }}</td>
+                <td class="pe-3">{{ alliance.active_nations|absolute_number }}</td>
+            </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No alliances exist yet.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
