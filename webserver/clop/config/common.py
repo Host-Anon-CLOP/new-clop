@@ -112,7 +112,7 @@ class Common(Configuration):
     Q_CLUSTER = {
         'name': 'clop',
         'label': 'Task Queue',
-        'workers': 8,
+        'workers': 4,
         'timeout': 180,
         'retry': 240,
         'recycle': 100,
