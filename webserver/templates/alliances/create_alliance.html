@@ -1,8 +1,8 @@
 {% extends "central_card_layout.html" %}
 
-{% block title %}Create Nation - >CLOP{% endblock %}
+{% block title %}Create Alliance - >CLOP{% endblock %}
 
-{% block card-header %}Create Nation{% endblock %}
+{% block card-header %}Create Alliance{% endblock %}
 
 {% block card-body %}
 <form class="needs-validation" method="POST" enctype="multipart/form-data" novalidate="">
@@ -44,44 +44,8 @@
         </div>
         <div class="invalid-feedback">{{ form.errors.flag }}</div>
     </div>
-    <div class="mb-3">
-        <div class="mb-2">
-            <label for="region" class="mb-2 text-muted">Region</label>
-            <div class="text-muted fw-light" style="font-size: 0.8rem;">
-                Affects available buildings (resources) and gameplay.
-            </div>
-        </div>
-        <select
-                class="form-select {% if form.errors.region %}is-invalid{% endif %}"
-                id="region"
-                name="region"
-        >
-        {% for value, label in form.fields.region.choices %}
-            <option value="{{ value }}" {% if form.region.value == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-        </select>
-        <div class="invalid-feedback">{{ form.errors.region }}</div>
-    </div>
-    <div class="mb-3">
-        <div class="mb-2">
-            <label for="subregion" class="text-muted">Subregion</label>
-            <div class="text-muted fw-light" style="font-size: 0.8rem;">
-                Only affects DNA collection.
-            </div>
-        </div>
-        <select
-                class="form-select {% if form.errors.subregion %}is-invalid{% endif %}"
-                id="subregion"
-                name="subregion"
-        >
-        {% for value, label in form.fields.subregion.choices %}
-            <option value="{{ value }}" {% if form.subregion.value == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-        </select>
-        <div class="invalid-feedback">{{ form.errors.subregion }}</div>
-    </div>
     <div class="d-flex justify-content-center">
-        <button type="submit" class="btn btn-primary px-3">Create Nation</button>
+        <button type="submit" class="btn btn-primary px-3">Create Alliance</button>
     </div>
 </form>
 {% endblock %}

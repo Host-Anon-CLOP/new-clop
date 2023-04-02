@@ -27,8 +27,8 @@ class UserProfileInline(admin.StackedInline):
 class AllianceMemberInline(admin.TabularInline):
     verbose_name_plural = 'Alliance Membership'
     model = AllianceMember
-    fields = ('alliance', 'rank', 'joined_at', )
-    readonly_fields = ('joined_at', )
+    fields = ('alliance', 'rank', 'joined_on', )
+    readonly_fields = ('joined_on', )
     min_num = 0
     max_num = 1
 

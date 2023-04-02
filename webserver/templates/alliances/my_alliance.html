@@ -17,7 +17,11 @@
                             </div>
                         </div>
                         <div class="card-body">
+                            {% if not my_member.can_edit_info %}
                             <p class="text-center mb-0">{{ alliance.description|default:'No description.' }}</p>
+                            {% else %}
+                                {% include 'alliances/edit_alliance.html' with form=edit_form %}
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -32,7 +36,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                {% include 'alliances/member_table.html' with members=alliance.members %}
+                                {% include 'alliances/my_member_table.html' with members=alliance.members %}
                             </div>
                         </div>
                     </div>

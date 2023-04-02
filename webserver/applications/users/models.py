@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -31,7 +32,10 @@ class User(AbstractUser):
 
     @cached_property
     def has_alliance(self):
-        return self.alliance is not None
+        try:
+            return self.alliance is not None
+        except ObjectDoesNotExist:
+            return False
 
     @cached_property
     def nation(self):

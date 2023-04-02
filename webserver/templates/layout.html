@@ -87,6 +87,8 @@
                             <li><a class="dropdown-item" href="{% url 'alliances' %}">Alliances</a></li>
                             {% if user.has_alliance %}
                             <li><a class="dropdown-item" href="{% url 'my_alliance' %}">My Alliance</a></li>
+                            {% else %}
+                            <li><a class="dropdown-item" href="{% url 'create_alliance' %}">Create Alliance</a></li>
                             {% endif %}
                         </ul>
                     </li>

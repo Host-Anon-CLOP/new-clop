@@ -19,6 +19,14 @@
                         <div class="card-body">
                             <p class="text-center mb-0">{{ alliance.description|default:'No description.' }}</p>
                         </div>
+                        <div class="card-footer">
+                            <div class="d-flex justify-content-center">
+                                <form action="{% url 'join_alliance' alliance.id %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-primary px-3">Request to join</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

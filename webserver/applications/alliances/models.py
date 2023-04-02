@@ -30,7 +30,7 @@ class Alliance(models.Model):
     flag = models.ImageField(upload_to=flag_upload, blank=True, null=True)
     banner = models.ImageField(upload_to=banner_upload, blank=True, null=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)  #todo rename
+    created_on = models.DateTimeField(auto_now_add=True)  #todo rename
 
     def __str__(self):
         return self.name
@@ -59,15 +59,15 @@ class AllianceMember(models.Model):
     user = models.OneToOneField('users.User', on_delete=models.CASCADE, related_name='alliance')
     alliance = models.ForeignKey(Alliance, on_delete=models.CASCADE, related_name='members')
 
-    joined_at = models.DateTimeField(auto_now_add=True)
+    joined_on = models.DateTimeField(auto_now_add=True)
 
     rank = models.PositiveSmallIntegerField(choices=ALLIANCE_RANKS.choices, default=ALLIANCE_RANKS.MEMBER)
 
     class Meta:
-        ordering = ['rank', 'joined_at']
+        ordering = ['rank', 'joined_on']
 
     def __str__(self):
-        return f'{self.user.username} in {self.alliance.name} ({self.get_rank_display()})'
+        return f'{self.user.username}'
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -84,7 +84,12 @@ class AllianceMember(models.Model):
 
     def delete(self, using=None, keep_parents=False):
         if self.rank == ALLIANCE_RANKS.LEADER:
-            self.alliance.second_in_command.rank = ALLIANCE_RANKS.LEADER
+            successor = self.alliance.members.exclude(user_id=self.user_id).first()
+            if successor:
+                successor.rank = ALLIANCE_RANKS.LEADER
+                successor.save()
+            else:
+                self.alliance.delete()
 
         super().delete(using, keep_parents)
 
@@ -103,10 +108,10 @@ class AllianceApplication(models.Model):
 
     message = models.TextField(blank=True)
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['created_on']
 
     def __str__(self):
-        return f'{self.user.username} in {self.alliance.name}'
+        return f'{self.user.username}'

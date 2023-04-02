@@ -61,6 +61,9 @@ class Nation(models.Model):
     region = models.PositiveSmallIntegerField(choices=REGIONS.choices)
     subregion = models.PositiveSmallIntegerField(choices=SUBREGIONS.choices)
 
+    class Meta:
+        ordering = ['created_on']
+
     def __str__(self):
         return f'{self.name}'
 

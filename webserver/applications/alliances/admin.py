@@ -7,13 +7,13 @@ class AllianceMemberInline(admin.TabularInline):
     model = AllianceMember
     fk_name = 'alliance'
     extra = 1
-    fields = ('user', 'rank', 'joined_at', )
-    readonly_fields = ('joined_at', )
+    fields = ('user', 'rank', 'joined_on', )
+    readonly_fields = ('joined_on', )
 
 
 @admin.register(Alliance)
 class AllianceAdmin(admin.ModelAdmin):
-    list_display = ('name', 'leader', 'second_in_command', 'created_at', )
+    list_display = ('name', 'leader', 'second_in_command', 'created_on', )
     search_fields = ('name', )
     inlines = (AllianceMemberInline, )
 

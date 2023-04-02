@@ -1,0 +1,33 @@
+<form class="needs-validation d-flex flex-column h-100" method="POST" enctype="multipart/form-data" novalidate="">
+    {% csrf_token %}
+    <input name="edit" hidden="">
+    <div class="mb-3 flex-grow-1 d-flex flex-column">
+        <label for="description" class="mb-2 text-muted">Description</label>
+        <textarea
+                class="form-control {% if form.errors.description %}is-invalid{% endif %} flex-grow-1"
+                id="description"
+                name="description"
+                rows="5"
+        >{{ form.description.value|default_if_none:"" }}</textarea>
+        <div class="invalid-feedback">{{ form.errors.description }}</div>
+    </div>
+    <div class="mb-3">
+        <label for="flag" class="mb-2 text-muted">Flag</label>
+        <div class="input-group {% if form.errors.flag %}is-invalid{% endif %}">
+            <input
+                    type="file"
+                    class="form-control {% if form.errors.flag %}is-invalid{% endif %}"
+                    aria-label="upload flag"
+                    id="flag"
+                    name="flag"
+                    value="{{ form.flag.value|default_if_none:"" }}"
+            >
+            <input type="checkbox" class="btn-check" style="border-left: none;" name="flag-clear" id="flag-clear" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="flag-clear">Clear</label>
+        </div>
+        <div class="invalid-feedback">{{ form.errors.flag }}</div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <button class="btn btn-primary px-4" type="submit">Save changes</button>
+    </div>
+</form>
