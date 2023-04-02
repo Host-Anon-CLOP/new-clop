@@ -10,7 +10,17 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import CreateView, UpdateView
 
+from .models import Login
+
 from .forms import ChangeEmailForm, LoginForm, RegisterForm, UserProfileForm
+
+
+def get_ip_address(request):
+    forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+    if forwarded:
+        return forwarded.split(',')[0]
+    else:
+        return request.META.get('REMOTE_ADDR')
 
 
 class LoginView(auth_views.LoginView):
@@ -20,6 +30,11 @@ class LoginView(auth_views.LoginView):
 
     def form_valid(self, form):
         result = super().form_valid(form)
+        Login.objects.create(
+            user=self.request.user,
+            ip=get_ip_address(self.request),
+        )
+
         messages.success(self.request, 'Successfully logged in.')
         return result
 
@@ -37,9 +52,15 @@ class RegisterView(CreateView):
     form_class = RegisterForm
 
     def form_valid(self, form):
+        ip = get_ip_address(self.request)
+        form.instance.register_ip = ip
         user = form.save()
-        # username = form.cleaned_data.get("username")
+
         login(self.request, user)
+        Login.objects.create(
+            user=self.request.user,
+            ip=ip,
+        )
 
         messages.success(self.request, 'Successfully registered. Welcome to >CLOP, fag.')
         return redirect(self.success_url)

@@ -6,7 +6,7 @@ from applications.nations.models import Nation
 
 from applications.alliances.models import AllianceMember
 
-from .models import User, UserProfile
+from .models import User, UserProfile, Login
 
 
 class UserProfileInline(admin.StackedInline):
@@ -63,3 +63,16 @@ class UserAdmin(UserAdmin):
     )
     list_display = ('username', 'email', 'register_ip', 'is_staff', )
     search_fields = ('username', 'email', 'register_ip', )
+
+
+@admin.register(Login)
+class LoginAdmin(admin.ModelAdmin):
+    list_display = ('user', 'ip', 'date', )
+    list_filter = ('date', )
+    search_fields = ('user__username', 'ip', )
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

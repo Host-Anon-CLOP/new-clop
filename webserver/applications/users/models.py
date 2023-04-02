@@ -65,6 +65,15 @@ class UserProfile(models.Model):
     active_nation = models.ForeignKey('nations.Nation', null=True, on_delete=models.SET_NULL)
 
 
+class Login(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='logins')
+    ip = models.GenericIPAddressField()
+    date = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date']
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
