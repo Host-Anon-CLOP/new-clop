@@ -36,8 +36,8 @@ class MarketView(HasNationMixin, TemplateView):
             item = item_type.get_object_for_this_type(pk=item_id)
             context['item'] = item
 
-            sell_orders = Order.objects.filter(item_id=item_id, item_type=item_type, order_type=OrderTypes.SELL).select_related('nation').order_by('price', '-created_at')
-            buy_orders = Order.objects.filter(item_id=item_id, item_type=item_type, order_type=OrderTypes.BUY).select_related('nation').order_by('-price', '-created_at')
+            sell_orders = Order.objects.filter(item_id=item_id, item_type=item_type, order_type=OrderTypes.SELL).select_related('nation').order_by('price', '-created_on')
+            buy_orders = Order.objects.filter(item_id=item_id, item_type=item_type, order_type=OrderTypes.BUY).select_related('nation').order_by('-price', '-created_on')
             context['sell_orders'] = sell_orders
             context['buy_orders'] = buy_orders
 
@@ -109,6 +109,8 @@ class FulfillOrderView(HasNationMixin, View):
         amount = int(request.POST['amount'])
         nation = request.user.nation
 
+        order = None
+
         with exception_to_message(request):
             try:
                 order = Order.objects.get(pk=order_id)
@@ -125,10 +127,6 @@ class FulfillOrderView(HasNationMixin, View):
             else:
                 raise InvalidInput('Invalid action')
 
-        # messages.success(request,
-        #                  f'Successfully fulfilled {order_type_str[order.order_type]} for {number(order.amount)} {order.item.name} '
-        #                  f'at {number(order.price)} bits each ({number(order.total_price)} bits total)')
-
         response = redirect('market')
         response['Location'] += f'?item={order.item_type_id}-{order.item_id}'
         return response
@@ -140,8 +138,8 @@ class MyOrdersView(HasNationMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        # context['orders'] = Order.objects.filter(nation=self.request.user.nation).select_related('item').order_by('-created_at')
-        context['sell_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.SELL).prefetch_related('item').order_by('item_type_id', 'item_id', 'price', '-created_at')
-        context['buy_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.BUY).prefetch_related('item').order_by('item_type_id', 'item_id', '-price', '-created_at')
+        # context['orders'] = Order.objects.filter(nation=self.request.user.nation).select_related('item').order_by('-created_on')
+        context['sell_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.SELL).prefetch_related('item').order_by('item_type_id', 'item_id', 'price', '-created_on')
+        context['buy_orders'] = Order.objects.filter(nation=self.request.user.nation, order_type=OrderTypes.BUY).prefetch_related('item').order_by('item_type_id', 'item_id', '-price', '-created_on')
 
         return context

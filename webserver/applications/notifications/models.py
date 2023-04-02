@@ -13,7 +13,7 @@ class REPORT_TYPES(models.IntegerChoices):
 
 
 class NationReport(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
     nation = models.ForeignKey('nations.Nation', on_delete=models.CASCADE, related_name='reports')
 
     text = models.TextField()
@@ -24,7 +24,7 @@ class NationReport(models.Model):
     read = models.BooleanField(default=False)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-created_on']
 
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
@@ -34,7 +34,7 @@ class NationReport(models.Model):
         # delete more than LIMIT oldest reports
         query = self.nation.reports.filter(~Q(id=self.id)).filter(nation_id=self.nation_id, report_type=self.report_type)
 
-        ids = query.order_by('-created_at')[settings.REPORTS_LIMIT:].values_list('pk', flat=True)
+        ids = query.order_by('-created_on')[settings.REPORTS_LIMIT:].values_list('pk', flat=True)
         self.nation.reports.filter(pk__in=ids).delete()
 
     def mark_read(self):

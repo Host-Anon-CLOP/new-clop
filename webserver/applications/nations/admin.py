@@ -14,8 +14,8 @@ class NationItemInline(admin.TabularInline):
 class OrderInline(admin.TabularInline):
     model = Order
     extra = 1
-    fields = ('item_id', 'item_type', 'amount', 'price', 'order_type', 'created_at', )
-    readonly_fields = ('created_at', )
+    fields = ('item_id', 'item_type', 'amount', 'price', 'order_type', 'created_on', )
+    readonly_fields = ('created_on', )
     show_change_link = True
 
 

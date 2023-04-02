@@ -32,12 +32,12 @@ class Order(models.Model):
     amount = models.PositiveIntegerField()
     price = models.PositiveIntegerField()
     order_type = models.PositiveSmallIntegerField(choices=OrderTypes.choices)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_on = models.DateTimeField(auto_now_add=True)
 
     nation = models.ForeignKey('nations.Nation', on_delete=models.CASCADE)
 
-    # class Meta:
-    #     ordering = ['-price', 'created_at']
+    class Meta:
+        ordering = ['created_on']
 
     def __str__(self):
         return f'{self.get_order_type_display()} {self.amount} {self.item.name} for {self.price} (by {self.nation.name})'
@@ -218,6 +218,17 @@ class Order(models.Model):
                 seller_report.save()
                 self.save()
 
+        order_transaction = Transaction(
+            buyer=buyer,
+            seller=seller,
+            item_id=self.item_id,
+            item_type=self.item_type,
+            amount=amount,
+            price=self.price,
+            order_type=self.order_type,
+        )
+        order_transaction.save()
+
     def save(
         self, force_insert=False, force_update=False, using=None, update_fields=None
     ):
@@ -237,3 +248,36 @@ class Order(models.Model):
     @property
     def price_taxed(self):
         return self.price * (1 + self.tax)
+
+
+class Transaction(models.Model):
+    buyer = models.ForeignKey(
+        'nations.Nation', on_delete=models.CASCADE, related_name='transactions_as_buyer'
+    )
+    seller = models.ForeignKey(
+        'nations.Nation', on_delete=models.CASCADE, related_name='transactions_as_seller'
+    )
+    item_id = models.PositiveIntegerField()
+    item_type = models.ForeignKey(
+        ContentType,
+        on_delete=models.CASCADE,
+        limit_choices_to={'model__in': ('resource',)}
+    )
+    item = GenericForeignKey('item_type', 'item_id')
+
+    amount = models.PositiveIntegerField()
+    price = models.PositiveIntegerField()
+    # total_price = models.PositiveIntegerField()
+
+    order_type = models.PositiveSmallIntegerField(choices=OrderTypes.choices)
+    created_on = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_on']
+
+    def __str__(self):
+        return f'{self.buyer} -> {self.seller} {self.amount} {self.item}'
+
+    @property
+    def total_price(self):
+        return self.amount * self.price

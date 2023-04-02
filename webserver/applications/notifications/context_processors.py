@@ -9,7 +9,7 @@ def reports(request):
 
     user_nation_ids = request.user.nations.values_list('id', flat=True)
     report_query = NationReport.objects.filter(nation_id__in=user_nation_ids, read=False)
-    report_query = report_query.order_by('-created_at')
+    report_query = report_query.order_by('-created_on')
     report_query = report_query.select_related('nation__owner')
     report_query = report_query[:settings.REPORTS_DISPLAY_LIMIT]
 

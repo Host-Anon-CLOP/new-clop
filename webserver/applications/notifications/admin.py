@@ -18,5 +18,5 @@ def mark_as_unread(modeladmin, request, queryset):
 class NationReportAdmin(admin.ModelAdmin):
     search_fields = ('nation__name',)
     list_filter = ('report_type',)
-    list_display = ('nation', 'report_type', 'created_at', 'read',)
+    list_display = ('nation', 'report_type', 'created_on', 'read',)
     actions = (mark_as_read, mark_as_unread,)
