@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Alliance, AllianceMember
+from .models import Alliance, AllianceMember, AllianceApplication
 
 
 class AllianceMemberInline(admin.TabularInline):
@@ -11,11 +11,19 @@ class AllianceMemberInline(admin.TabularInline):
     readonly_fields = ('joined_on', )
 
 
+class AllianceApplicationInline(admin.TabularInline):
+    model = AllianceApplication
+    fk_name = 'alliance'
+    extra = 1
+    fields = ('user', 'message', 'created_on', )
+    readonly_fields = ('created_on', )
+
+
 @admin.register(Alliance)
 class AllianceAdmin(admin.ModelAdmin):
     list_display = ('name', 'leader', 'second_in_command', 'created_on', )
     search_fields = ('name', )
-    inlines = (AllianceMemberInline, )
+    inlines = (AllianceMemberInline, AllianceApplicationInline, )
 
     def leader(self, obj):
         return obj.leader
