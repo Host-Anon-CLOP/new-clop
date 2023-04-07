@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+import mimetypes
 
 import environ
 from configurations import Configuration
@@ -41,6 +42,7 @@ class Common(Configuration):
         'webpack_boilerplate',
         'django_extensions',
         'django_q',
+        'debug_toolbar',
 
         # Internal
         'applications.users',
@@ -59,6 +61,7 @@ class Common(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
 
     DOMAIN_NAME = env('DOMAIN_NAME', default='clop.localhost')
@@ -118,6 +121,12 @@ class Common(Configuration):
         'recycle': 100,
         'orm': 'default',
     }
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: request.user.is_staff,
+    }
+    # Toolbar fix
+    mimetypes.add_type("application/javascript", ".js", True)
 
     # Static files (CSS, JavaScript, Images)
     STATIC_URL = '/static/'

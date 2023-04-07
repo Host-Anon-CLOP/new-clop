@@ -1,0 +1,22 @@
+# Development overrides
+services:
+  web:
+    command: gunicorn --bind 0.0.0.0:8000 clop.wsgi
+    environment:
+      DJANGO_CONFIGURATION: Test
+    depends_on:
+      db:
+        condition: service_healthy
+      frontend:
+        condition: service_completed_successfully
+
+  queue_worker:
+    environment:
+      DJANGO_CONFIGURATION: Test
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    restart: 'no'
+    command: npm run build

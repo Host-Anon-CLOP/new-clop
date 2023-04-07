@@ -25,18 +25,3 @@ services:
     networks:
       - default
       - internal
-
-#  pgadmin:
-#    image: dpage/pgadmin4
-#    container_name: clop-pgadmin
-#    restart: unless-stopped
-#    security_opt:
-#      - no-new-privileges:true
-#    networks:
-#      - internal
-#    ports:
-#      - "5050:80"
-#    environment:
-#      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-#      PGADMIN_DEFAULT_PASSWORD: root
-#      PGADMIN_LISTEN_PORT: 80

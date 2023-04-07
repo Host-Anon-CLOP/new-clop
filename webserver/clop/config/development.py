@@ -1,32 +1,23 @@
-import mimetypes
-
 from .common import BASE_DIR, Common
 
 
 class Development(Common):
     DEBUG = True
 
-    INSTALLED_APPS = Common.INSTALLED_APPS + [
-        'debug_toolbar',
-    ]
+    # INSTALLED_APPS = Common.INSTALLED_APPS + [
+    #
+    # ]
 
     # Mail
     EMAIL_HOST = 'localhost'
     EMAIL_PORT = 1025
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-    MIDDLEWARE = [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ] + Common.MIDDLEWARE
-
-    INTERNAL_IPS = [
-        '127.0.0.1',
-    ]
+    # MIDDLEWARE = [
+    #
+    # ] + Common.MIDDLEWARE
 
     # Debug toolbar
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda request: True,
     }
-
-    # Toolbar fix
-    mimetypes.add_type("application/javascript", ".js", True)
