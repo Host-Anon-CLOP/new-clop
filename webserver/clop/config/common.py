@@ -116,9 +116,10 @@ class Common(Configuration):
         'name': 'clop',
         'label': 'Task Queue',
         'workers': 4,
-        'timeout': 180,
-        'retry': 240,
-        'recycle': 100,
+        'timeout': 300,
+        'retry': 360,
+        'max_attempts': 5,
+        'recycle': 500,
         'orm': 'default',
     }
 
