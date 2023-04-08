@@ -25,6 +25,10 @@
             <td class="text-end">{{ resource.net|delta_number }}</td>
             <td class="text-end pe-3">{{ resource.ticks_worth }}</td>
         </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">No resources.</td>
+        </tr>
         {% endfor %}
     </tbody>
 </table>

@@ -4,6 +4,7 @@
 secrets
 media
 staticfiles
+webserver/version.txt
 
 .env
 bootstrap*
