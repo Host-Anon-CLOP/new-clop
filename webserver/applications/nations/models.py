@@ -517,7 +517,7 @@ class Nation(models.Model):
                         if resource_id in resources:
                             resources[resource_id].amount += resource_dict['amount']
                         else:
-                            resources[resource_id] = NationItem(
+                            resources[resource_id] = NationResource(
                                 nation=self,
                                 item_id=resource_id,
                                 item_type=resource_type,
