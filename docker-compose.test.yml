@@ -1,7 +1,7 @@
 # Development overrides
 services:
   web:
-    command: gunicorn --bind 0.0.0.0:8000 --workers=2 clop.wsgi
+    command: gunicorn --bind 0.0.0.0:8000 --workers=2 --preload clop.wsgi
     environment:
       DJANGO_CONFIGURATION: Test
     depends_on:
