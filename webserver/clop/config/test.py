@@ -2,7 +2,7 @@ from .common import BASE_DIR, Common
 
 
 class Test(Common):
-    DEBUG = True
+    DEBUG = False
 
     # Mail
     EMAIL_HOST = 'localhost'
