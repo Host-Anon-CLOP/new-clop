@@ -10,15 +10,31 @@ compose_files = {
     # 'production': './docker-compose.prod.yml',
 }
 
+branches = {
+    'development': 'dev',
+    'test': 'dev',
+    # 'production': 'master',
+}
+
 
 @click.command()
 @click.option('--environment', '-e', default='development', help='Environment to run in', type=click.Choice(list(compose_files.keys())))
 @click.option('--pull/--no-pull', default=True, help='Pull repo before running')
 def update_docker_compose(environment, pull):
-    if pull:
-        repo = git.Repo('.')
-        current_commit = repo.head.commit
+    repo = git.Repo('.')
 
+    print("Fetching repo")
+    repo.remotes.origin.fetch()
+    current_commit = repo.head.commit
+
+    branch = branches[environment]
+    print(f'Using branch: {branch}')
+    current_branch = repo.active_branch.name
+    if current_branch != branch:
+        print(f'Checking out branch: {branch} from current branch: {current_branch}')
+        repo.heads[branch].checkout()
+
+    if pull:
         print(f'Pulling repo, current commit: {current_commit}')
         repo.remotes.origin.pull()
         new_commit = repo.head.commit
