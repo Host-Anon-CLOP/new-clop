@@ -424,7 +424,7 @@ class Command(BaseCommand):
             schedule_type=Schedule.CRON,
             # At the start of every second hour
             # cron='0 */2 * * *',
-            cron='*/1 * * * *',
+            cron='*/5 * * * *',
             repeats=-1,
         )
         Schedule.objects.update_or_create(
