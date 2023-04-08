@@ -10,6 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+WORKING_DIR = Path(os.getcwd())
 env = environ.Env()
 
 
@@ -128,6 +129,12 @@ class Common(Configuration):
     }
     # Toolbar fix
     mimetypes.add_type("application/javascript", ".js", True)
+
+    try:
+        with open(WORKING_DIR / 'version.txt', 'r') as f:
+            VERSION = f.read().strip()
+    except FileNotFoundError:
+        VERSION = 'unknown'
 
     # Static files (CSS, JavaScript, Images)
     STATIC_URL = '/static/'
