@@ -3,6 +3,7 @@ import click
 import git
 from python_on_whales import DockerClient
 
+import time
 from pathlib import Path
 
 compose_files = {
@@ -59,11 +60,18 @@ def update_docker_compose(environment, pull):
     docker = DockerClient(compose_files=['./docker-compose.yml', compose_file])
 
     print('Building docker image')
+    build_start = time.time()
     docker.compose.build()
-    print('Docker image built')
+    build_elapsed = time.time() - build_start
+    print(f'Docker image built in {build_elapsed:.2f}s')
 
     print('Restarting docker containers')
+    up_start = time.time()
     docker.compose.up(detach=True)
+    up_elapsed = time.time() - up_start
+    print(f'Docker containers restarted in {up_elapsed:.2f}s')
+    print(f'Total time: {build_elapsed + up_elapsed:.2f}s')
+
     print('Done, everything should be up and running now!')
     return True
 
