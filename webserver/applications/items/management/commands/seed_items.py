@@ -137,7 +137,6 @@ class Command(BaseCommand):
             icon=icons / 'Oil.png',
             description='The stuff of life and the backbone of the >CLOP economy.'
         )
-
         copper = resource(
             name='Copper',
             icon=icons / 'Copper.png',
@@ -150,6 +149,18 @@ class Command(BaseCommand):
             description='A pony without apples is an unhappy pony. Unhappy ponies will overthrow you and trot on your corpse. Keep your ponies happy. Give them apples.'
         )
 
+        gems = resource(
+            name='Gems',
+            icon=icons / 'Gems.png',
+            description='Shiny crystals used in the manufacture of precision parts, luxury goods, and magical equipment.',
+        )
+
+        tungsten = resource(
+            name='Tungsten',
+            icon=icons / 'Tungsten.png',
+            description='A lustrous metal used to manufacture alloys and composites.',
+        )
+
         energy = resource(
             name='Energy',
             icon=icons / 'Energy.png',
@@ -159,22 +170,159 @@ class Command(BaseCommand):
 
         vehicle_parts = resource(
             name='Vehicle Parts',
-            icon=icons / 'VehicleParts.png',
+            icon=icons / 'Vehicle Parts.png',
             description='These vehicle parts have many uses, first among them being to make life easier on ponies who work in farms, mines, and oil wells, turning a nasty job into a slightly less nasty one.',
         )
 
         machinery_parts = resource(
             name='Machinery Parts',
-            icon=icons / 'MachineryParts.png',
+            icon=icons / 'Machinery Parts.png',
             description='These machinery parts are used in the manufacture of advanced structures.',
+        )
+        # To this day, nopony knows where BtMess found the copper. But the Crystal factories never stopped.
+
+        Precision_Parts = resource(
+            name='Precision parts',
+            icon=icons / 'Precision Parts.png',
+            description='Highly precise components for sophisticated machinery.',
+        )
+
+        Composites = resource(
+            name='Composites',
+            icon=icons / 'Composites.png',
+            description='A durable and lightweight manufactured material used in the military and industrial sectors.',
         )
 
         pies = resource(
             name='Pies',
             icon=icons / 'Pies.png',
-            description='Distributing these baked goodies brings your little ponies happiness up quickly',
+            description='Distributing these baked goodies brings your little ponies happiness up quickly.',
         )
 
+        cider = resource(
+            name='Cider',
+            icon=icons / 'Cider.png',
+            description='Cider stocks bars and keeps communists calm. May or may not contain quality and care.',
+        )
+
+        coffee = resource(
+            name='Coffee',
+            icon=icons / 'Coffee.png',
+            description='Coffee stocks Coffee shops and keeps the capitalists alert.',
+        )
+
+        gasoline = resource(
+            name='Gasoline',
+            icon=icons / 'Gasoline.png',
+            description='This refined petroleum product is critical to certain government types and buildings.',
+        )
+
+        toys = resource(
+            name='Toys',
+            icon=icons / 'Toys.png',
+            description='Plastic novelties, distractions, and collectibles.',
+        )
+
+        plastics = resource(
+            name='Plastics',
+            icon=icons / 'Plastics.png',
+            description='A versatile petroleum product used for composites, consumer goods, and military hardware.',
+        )
+
+        drugs = resource(
+            name='Drugs',
+            icon=icons / 'Drugs.png',
+            description='You can smuggle these into the Solar Empire or New Lunar Republic to get some quick money at the cost of damaging foreign relations.',
+        )
+
+        DNA_N_SA = resource(
+            name='DNA - North Saddle Arabia',
+            icon=icons / 'DNA - North Saddle Arabia.png',
+            description='DNA extracted from the inhabitants of Northern Saddle Arabia.',
+        )
+
+        DNA_C_SA = resource(
+            name='DNA - Central Saddle Arabia',
+            icon=icons / 'DNA - Central Saddle Arabia.png',
+            description='DNA extracted from the inhabitants of Central Saddle Arabia.',
+        )
+
+        DNA_S_SA = resource(
+            name='DNA - South Saddle Arabia',
+            icon=icons / 'DNA - South Saddle Arabia.png',
+            description='DNA extracted from the inhabitants of Southern Saddle Arabia.',
+        )
+
+        DNA_N_Zeb = resource(
+            name='DNA - North Zebrica',
+            icon=icons / 'DNA - North Zebrica.png',
+            description='DNA extracted from the inhabitants of Northern Zebrica.',
+        )
+
+        DNA_C_Zeb = resource(
+            name='DNA - Central Zebrica',
+            icon=icons / 'DNA - Central Zebrica.png',
+            description='DNA extracted from the inhabitants of Central Zebrica.',
+        )
+
+        DNA_S_Zeb = resource(
+            name='DNA - South Zebrica',
+            icon=icons / 'DNA - South Zebrica.png',
+            description='DNA extracted from the inhabitants of Southern Zebrica.',
+        )
+
+        DNA_N_Burr = resource(
+            name='DNA - Northern Burrozil',
+            icon=icons / 'DNA - North Burrozil.png',
+            description='DNA extracted from the inhabitants of Northern Burrozil.',
+        )
+
+        DNA_C_Burr = resource(
+            name='DNA - Central Burrozil',
+            icon=icons / 'DNA - Central Burrozil.png',
+            description='DNA extracted from the inhabitants of Central Burrozil.',
+        )
+
+        DNA_S_Burr = resource(
+            name='DNA - South Burrozil',
+            icon=icons / 'DNA - South Burrozil.png',
+            description='DNA extracted from the inhabitants of Southern Burrozil.',
+        )
+
+        DNA_N_Prz = resource(
+            name='DNA - North Przewalskia',
+            icon=icons / 'DNA - North Przewalskia.png',
+            description='DNA extracted from the inhabitants of Northern Przewalskia.',
+        )
+
+        DNA_C_Prz = resource(
+            name='DNA - Central Przewalskia',
+            icon=icons / 'DNA - Central Przewalskia.png',
+            description='DNA extracted from the inhabitants of Central Przewalskia.',
+        )
+
+        DNA_S_Prz = resource(
+            name='DNA - South Przewalskia',
+            icon=icons / 'DNA - South Przewalskia.png',
+            description='DNA extracted from the inhabitants of Southern Przewalskia.',
+        )
+
+        Forbidden_Research = resource(
+            name='Forbidden Research',
+            icon=icons / 'Forbidden Research.png',
+            description='Research conducted in spite of international law.',
+            tradable=False,
+        )
+
+        Serum = resource(
+            name='Apotheosis Serum',
+            icon=icons / 'Apotheosis Serum.png',
+            description='The culmination of genius and reckless experimentation.',
+            tradable=False,
+        )
+        # 90% ovipositor juice by mass
+
+        #recipes
         recipe(
             name='Burn Oil',
             description='Burn oil in inefficient, hand-me-down generators in a wasteful process that severely pollutes the air and only yields small amount of energy.',
@@ -201,6 +349,18 @@ class Command(BaseCommand):
         )
 
         recipe(
+            name='Distribute Pies',
+            description='Distribute pies to quickly mollify a grumpy herd.',
+            recipe_type=RECIPE_TYPES.BASIC_ACTIONS,
+            consumes=bundle(
+                items={pies: 1},
+            ),
+            produces=bundle(
+                satisfaction=2,
+            ),
+        )
+
+        recipe(
             name='Distribute Money',
             description='This is probably the worst use of money possible and won`t work in the long run, but if you`re desperately trying to stave off losing your country... well, it`s better than nothing.',
             recipe_type=RECIPE_TYPES.BASIC_ACTIONS,
@@ -211,7 +371,7 @@ class Command(BaseCommand):
                 satisfaction=1,
             ),
         )
-
+#Needs Pretzel prices
         basic_factory = building(
             name='Basic Factory',
             description='Little more than a series of primitive CNC machines and some aging control systems, this factory makes everything from basic gun parts to pieces of more advanced factories.',
@@ -239,7 +399,35 @@ class Command(BaseCommand):
                 items={basic_factory: 1}
             ),
         )
+#Needs Pretzel prices
+        Advanced_Factory = building(
+            name='Advanced Factory',
+            description='A collection of sophisticated tools and quality machines staffed by highly trained ponies. Can be used to manufacture precision parts and composites.',
+            satisfaction_on_destroy=0,
+            softcap=7,
+            softcap_divider=5,
+            consumes=bundle(
+                items={energy: 2}
+            ),
+            produces=bundle(
+                satisfaction=-1,
+                funds=20000,
+            ),
+        )
 
+        recipe(
+            name='Build Advanced Factory',
+            description=Advanced_Factory.description,
+            recipe_type=RECIPE_TYPES.FACTORIES,
+            consumes=bundle(
+                funds=500000,
+                items={energy: 50, copper: 50, vehicle_parts: 20, machinery_parts: 20},
+            ),
+            produces=bundle(
+                items={Advanced_Factory: 1}
+            ),
+        )
+#Needs Pretzel prices
         oil_combustion_plant = building(
             name='Oil Combustion Plant',
             description='A large, industrial-scale plant that burns oil to produce energy. Much more efficient and less polluting than burning oil by hand.',
@@ -265,6 +453,31 @@ class Command(BaseCommand):
             ),
             produces=bundle(
                 items={oil_combustion_plant: 1}
+            ),
+        )
+#Needs Pretzel prices
+        Gasoline_refinery = building(
+            name='Gasoline refinery',
+            description='A vast complex of structures for refining oil into gasoline',
+            satisfaction_on_destroy=0,
+            consumes=bundle(
+                items={oil: 10},
+            ),
+            produces=bundle(
+                items={gasoline: 8},
+            ),
+        )
+
+        recipe(
+            name='Build Gasoline Refinery',
+            description=Gasoline_refinery.description,
+            recipe_type=RECIPE_TYPES.RESOURCE_CONVERSION,
+            consumes=bundle(
+                funds=500000,
+                items={copper: 10, machinery_parts: 20},
+            ),
+            produces=bundle(
+                items={Gasoline_refinery: 1}
             ),
         )
 
@@ -375,6 +588,64 @@ class Command(BaseCommand):
             ),
         )
 
+        mechanised_apple_farm = building(
+            name='Mechanised Apple Farm',
+            description='Say what you want about the earth pony way, but industrial agriculture definitely beats having to grow the stuff yourself.',
+            satisfaction_on_destroy=0,
+            softcap=20,
+            softcap_divider=5,
+            consumes=bundle(
+                items={energy: 1},
+            ),
+            produces=bundle(
+                satisfaction=-1,
+                items={apples: 8},
+            ),
+        )
+
+        recipe(
+            name='Upgrade Apple Farm',
+            description=mechanised_apple_farm.description,
+            recipe_type=RECIPE_TYPES.RESOURCE_EXTRACTION,
+            region=REGIONS_ANY.BURROZIL,
+            consumes=bundle(
+                funds=200000,
+                items={vehicle_parts: 20, machinery_parts: 5, basic_apple_farm: 1},
+            ),
+            produces=bundle(
+                items={mechanised_apple_farm: 1}
+            ),
+        )
+
+        mechanised_copper_mine = building(
+            name='Mechanised Copper Mine',
+            description='Say what you want about the earth pony way, but industrial agriculture definitely beats having to grow the stuff yourself.',
+            satisfaction_on_destroy=0,
+            softcap=20,
+            softcap_divider=5,
+            consumes=bundle(
+                items={energy: 1},
+            ),
+            produces=bundle(
+                satisfaction=-1,
+                items={apples: 8},
+            ),
+        )
+
+        recipe(
+            name='Upgrade Apple Farm',
+            description=mechanised_apple_farm.description,
+            recipe_type=RECIPE_TYPES.RESOURCE_EXTRACTION,
+            region=REGIONS_ANY.BURROZIL,
+            consumes=bundle(
+                funds=200000,
+                items={vehicle_parts: 20, machinery_parts: 5, basic_apple_farm: 1},
+            ),
+            produces=bundle(
+                items={mechanised_apple_farm: 1}
+            ),
+        )
+#Needs Pretzel Prices
         bakery = building(
             name='Bakery',
             description='This bakery produces pies, which are a staple of the >CLOP diet. Ponies will be satisfied just by watching the pies being made.',
@@ -393,11 +664,111 @@ class Command(BaseCommand):
             description=bakery.description,
             recipe_type=RECIPE_TYPES.SATISFACTION_BUILDINGS,
             consumes=bundle(
-                funds=400000,
+                funds=200000,
                 items={energy: 10, copper: 5, vehicle_parts: 5, machinery_parts: 5},
             ),
             produces=bundle(
                 items={bakery: 1}
+            ),
+        )
+
+        coffee_shop = building(
+            name='Coffee Shop',
+            description='This shop serves coffee and pies to feed your hungry workforce.',
+            satisfaction_on_destroy=-10,
+            consumes=bundle(
+                items={coffee: 3, pies: 1}
+            ),
+            produces=bundle(
+                satisfaction=10
+            ),
+        )
+
+        recipe(
+            name='Build Coffee Shop',
+            description=coffee_shop.description,
+            recipe_type=RECIPE_TYPES.SATISFACTION_BUILDINGS,
+            consumes=bundle(
+                funds=150000,
+                items={copper: 40,},
+            ),
+            produces=bundle(
+                items={bakery: 1}
+            ),
+        )
+
+        bar = building(
+            name='Bar',
+            description='This bar exclusively serves cider. Generates no cash, as nopony ever pays their tab.',
+            satisfaction_on_destroy=-10,
+            consumes=bundle(
+                items={cider: 3, pies: 1}
+            ),
+            produces=bundle(
+                satisfaction=10
+            ),
+        )
+
+        recipe(
+            name='Build Bakery',
+            description=bakery.description,
+            recipe_type=RECIPE_TYPES.SATISFACTION_BUILDINGS,
+            consumes=bundle(
+                funds=150000,
+                items={copper: 40},
+            ),
+            produces=bundle(
+                items={bar: 1}
+            ),
+        )
+
+        video_arcade = building(
+            name='Video Arcade',
+            description='This arcade holds a wide array of games, ranging from retro to slightly less retro. Tokens are non-refundable.',
+            satisfaction_on_destroy=-10,
+            consumes=bundle(
+                items={energy: 6, pies: 1}
+            ),
+            produces=bundle(
+                satisfaction=10,
+            ),
+        )
+
+        recipe(
+            name='Build Video Arcade',
+            description=video_arcade.description,
+            recipe_type=RECIPE_TYPES.SATISFACTION_BUILDINGS,
+            consumes=bundle(
+                funds=500000,
+                items={energy: 50, copper: 50},
+            ),
+            produces=bundle(
+                items={video_arcade: 1}
+            ),
+        )
+
+        toy_and_candy_shop = building(
+            name='Toy and Candy Shop',
+            description='This store sells treats and distractions for foals of all ages.',
+            satisfaction_on_destroy=-20,
+            consumes=bundle(
+                items={toys: 4, apples: 4, pies: 4}
+            ),
+            produces=bundle(
+                satisfaction=30,
+            ),
+        )
+
+        recipe(
+            name='Build Toy and Candy Shop',
+            description=toy_and_candy_shop.description,
+            recipe_type=RECIPE_TYPES.SATISFACTION_BUILDINGS,
+            consumes=bundle(
+                funds=400000,
+                items={copper: 50},
+            ),
+            produces=bundle(
+                items={toy_and_candy_shop: 1}
             ),
         )
 
@@ -424,7 +795,7 @@ class Command(BaseCommand):
             schedule_type=Schedule.CRON,
             # At the start of every second hour
             # cron='0 */2 * * *',
-            cron='*/5 * * * *',
+            cron='*/1 * * * *',
             repeats=-1,
         )
         Schedule.objects.update_or_create(
